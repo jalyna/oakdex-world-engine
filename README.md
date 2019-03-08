@@ -24,6 +24,8 @@ ReactDOM.render(
       { name: 'Stranger', image: charset2, x: 13, y: 12, looksTo: 'top' }, // bottom is default
       { name: 'Other Person', image: charset3, x: 15, y: 12 }
     ]}
+    onWalksTo={(x, y, looksAtX, looksAtY, special) => console.log('walked to', x, y, looksAtX, looksAtY, special)}
+    onPressEnter={(x, y, looksAtX, looksAtY, special) => console.log('walked to', x, y, special)}
     />,
   document.getElementById('app')
 )

@@ -7,7 +7,8 @@
   },
   "homepage": "https://github.com/jalyna/oakdex-world-engine",
   "description": "2d Map Runner for oakdex-world-editor",
-  "main": "dist/bundle.js",
+  "main": "./dist/bundle.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "test": "./node_modules/jest/bin/jest.js",
     "build": "./node_modules/webpack/bin/webpack.js --mode=production",
