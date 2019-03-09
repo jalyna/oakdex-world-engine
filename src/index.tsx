@@ -169,7 +169,9 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     }
 
     this.setState({
-      pressedKey: dir
+      pressedKey: dir,
+      otherPressedKeys: this.state.otherPressedKeys.slice()
+        .concat(this.state.pressedKey ? [this.state.pressedKey] : null)
     })
 
     if (!this.interval) {
@@ -185,8 +187,13 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       return
     }
 
+    let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir)
+    const lastKey = otherPressedKeys[otherPressedKeys.length - 1]
+    otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey)
+
     this.setState({
-      pressedKey: null
+      pressedKey: lastKey || null,
+      otherPressedKeys
     })
   }
 
