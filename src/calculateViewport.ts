@@ -1,4 +1,4 @@
-import { TILE_SIZE, FRAMES_PER_STEP, MapData, CharState, Direction } from '.'
+import { TILE_SIZE, FRAMES_PER_STEP, Viewport, MapData, CharState, Direction } from '.'
 
 export interface Offsets {
   top: number,
@@ -11,7 +11,7 @@ function clamp (value: number, min: number, max: number): number {
   return value
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData, charState: CharState): Offsets {
+export default function (viewport: Viewport, mapData: MapData, charState: CharState): Offsets {
   let y = charState.y * TILE_SIZE
   let x = charState.x * TILE_SIZE
 
@@ -32,8 +32,10 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, charState:
     }
   }
 
+  console.log(-y + viewport.height/2)
+
   return {
-    top: clamp(y - canvas.height/2, 0, (mapData.height * TILE_SIZE) - canvas.height),
-    left: clamp(x - canvas.width/2, 0, (mapData.width * TILE_SIZE) - canvas.width)
+    top: clamp(-y + (viewport.height * TILE_SIZE)/2, -(mapData.height * TILE_SIZE) + (viewport.height * TILE_SIZE), 0),
+    left: clamp(-x + (viewport.width * TILE_SIZE)/2, -(mapData.width * TILE_SIZE) + (viewport.width * TILE_SIZE), 0)
   }
 }

@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import draw from './draw'
+import calculateViewport from './calculateViewport'
 
 export interface Coordinates {
   x: number,
@@ -106,12 +107,26 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   private interval: number | null
 
   render () {
+    const { top, left } = calculateViewport(this.props.viewport, this.props.mapData, this.controllableChar)
     return (
-      <canvas
-        ref={this.canvas}
-        width={this.props.viewport.width * TILE_SIZE}
-        height={this.props.viewport.height * TILE_SIZE}
-        style={{ imageRendering: 'pixelated' }} />
+      <div style={{
+        overflow: 'hidden',
+        width: this.props.viewport.width * TILE_SIZE,
+        height: this.props.viewport.height * TILE_SIZE,
+        position: 'relative'
+      }}>
+        <div style={{
+          position: 'absolute',
+          left: left,
+          top: top
+        }}>
+          <canvas
+            ref={this.canvas}
+            width={this.props.mapData.width * TILE_SIZE}
+            height={this.props.mapData.height * TILE_SIZE}
+            style={{ imageRendering: 'pixelated' }} />
+        </div>
+      </div>
     )
   }
 

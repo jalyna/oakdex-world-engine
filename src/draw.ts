@@ -1,5 +1,4 @@
 import { MapData, CharState, Char } from '.'
-import calculateViewport from './calculateViewport'
 import drawChar from './drawChar'
 
 interface LoadedImages {
@@ -39,18 +38,17 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Cha
 
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    const { top, left } = calculateViewport(canvas, mapData, charStates[0])
     ctx.drawImage(
       loadedImages.background,
-      left, top, canvas.width, canvas.height,
+      0, 0, canvas.width, canvas.height,
       0, 0, canvas.width, canvas.height
     )
     charStates.forEach((charState, i) => {
-      drawChar(ctx, { top, left }, loadedImages['char' + i], charState)
+      drawChar(ctx, loadedImages['char' + i], charState)
     })
     ctx.drawImage(
       loadedImages.foreground,
-      left, top, canvas.width, canvas.height,
+      0, 0, canvas.width, canvas.height,
       0, 0, canvas.width, canvas.height
     )
   })

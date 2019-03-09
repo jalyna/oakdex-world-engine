@@ -34,10 +34,10 @@ function calculateCharsetOffset (dir: Direction, frame: number): Offsets {
   }
 }
 
-export default function drawChar (ctx: CanvasRenderingContext2D, viewportOffset: Offsets, image: HTMLImageElement, charState: CharState) {
+export default function drawChar (ctx: CanvasRenderingContext2D, image: HTMLImageElement, charState: CharState) {
   const { top, left } = calculateCharsetOffset(charState.dir || Direction.Down, charState.frame)
-  let x = charState.x * TILE_SIZE - viewportOffset.left
-  let y = charState.y * TILE_SIZE - viewportOffset.top
+  let x = charState.x * TILE_SIZE
+  let y = charState.y * TILE_SIZE
 
   if (charState.frame < FRAMES_PER_STEP) {
     switch (charState.dir) {
