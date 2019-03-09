@@ -79,6 +79,7 @@ export interface CharState extends Coordinates {
   image: string,
   animationFrame: number,
   progressFrame: number,
+  name?: string,
   walkThrough?: boolean,
   lookNotInDirection?: boolean
 }

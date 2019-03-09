@@ -61,4 +61,11 @@ export default function drawChar (ctx: CanvasRenderingContext2D, image: HTMLImag
     left, top, CHAR_SIZE, CHAR_SIZE,
     x - 8, y - 16, CHAR_SIZE, CHAR_SIZE
   )
+
+  if (charState.name) {
+    ctx.font = 'normal 8px Verdana'
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+    ctx.fillText(charState.name, x + 8, y + 24, 100)
+  }
 }
