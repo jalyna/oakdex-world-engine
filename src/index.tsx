@@ -212,7 +212,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   onKeyDown (e: KeyboardEvent) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' || e.key === ' ') {
       this.pressEnter()
       return
     }
