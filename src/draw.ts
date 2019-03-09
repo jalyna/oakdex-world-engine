@@ -39,8 +39,6 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Cha
 
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = 'black'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
     const { top, left } = calculateViewport(canvas, mapData, charStates[0])
     ctx.drawImage(
       loadedImages.background,

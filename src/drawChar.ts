@@ -1,4 +1,4 @@
-import { CharState, TILE_SIZE, Direction } from '.'
+import { CharState, TILE_SIZE, FRAMES_PER_STEP, Direction } from '.'
 
 interface Offsets {
   top: number,
@@ -28,8 +28,25 @@ function calculateCharsetOffset (dir: Direction, percent: number): Offsets {
 
 export default function drawChar (ctx: CanvasRenderingContext2D, viewportOffset: Offsets, image: HTMLImageElement, charState: CharState) {
   const { top, left } = calculateCharsetOffset(charState.dir || Direction.Down, 100)
-  const x = charState.x * TILE_SIZE - viewportOffset.left
-  const y = charState.y * TILE_SIZE - viewportOffset.top
+  let x = charState.x * TILE_SIZE - viewportOffset.left
+  let y = charState.y * TILE_SIZE - viewportOffset.top
+
+  if (charState.frame < FRAMES_PER_STEP) {
+    switch (charState.dir) {
+      case Direction.Left:
+        x = x - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        break
+      case Direction.Right:
+        x = x + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        break
+      case Direction.Down:
+        y = y + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        break
+      case Direction.Up:
+        y = y - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        break
+    }
+  }
 
   ctx.drawImage(
     image,

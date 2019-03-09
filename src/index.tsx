@@ -69,7 +69,7 @@ export interface WorldEngineProps {
 
 export interface CharState extends Coordinates {
   dir: Direction,
-  percent: number // 0-100
+  frame: number
 }
 
 export interface WorldEngineState {
@@ -78,13 +78,15 @@ export interface WorldEngineState {
 }
 
 export const TILE_SIZE = 16
+export const FRAMES_PER_STEP = 4
+export const FRAME_DURATION = 60
 
 function getInitialCharState ({ x, y, dir }: Char): CharState {
   return {
     x,
     y,
     dir: dir || Direction.Down,
-    percent: 100
+    frame: 0
   }
 }
 
@@ -144,7 +146,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     })
 
     if (!this.interval) {
-      this.interval = setInterval(this.tick, 200)
+      this.tick()
+      this.interval = setInterval(this.tick, FRAME_DURATION)
     }
   }
 
@@ -164,7 +167,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.redraw()
     document.addEventListener('keydown', this.onKeyDown)
     document.addEventListener('keyup', this.onKeyUp)
-    this.interval = setInterval(this.tick, 200)
+    this.interval = setInterval(this.tick, FRAME_DURATION)
   }
 
   componentWillUnmount () {
@@ -179,26 +182,73 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   nextCharAnimation () {
-
+    if (this.controllableChar.frame === FRAMES_PER_STEP - 1) {
+      this.finishStep()
+      return
+    }
+    this.changeControllableChar({
+      frame: this.controllableChar.frame + 1
+    })
   }
 
   get controllableChar (): CharState {
     return this.state.chars[0]
   }
 
-  tick () {
-    if (this.controllableChar.percent < 100) {
-      this.nextCharAnimation()
-      return
-    }
-    if (!this.state.pressedKey) {
-      return
-    }
+  changeControllableChar (newFields: object) {
+    console.log(newFields)
     this.setState({
       chars: [{
         ...this.controllableChar,
-        dir: this.state.pressedKey
+        ...newFields
       }].concat(this.state.chars.slice(1, this.state.chars.length))
+    })
+  }
+
+  clearAnimation () {
+    clearInterval(this.interval)
+    this.interval = null
+  }
+
+  finishStep () {
+    let x = this.controllableChar.x
+    let y = this.controllableChar.y
+    switch (this.controllableChar.dir) {
+      case Direction.Left:
+        x = x - 1
+        break
+      case Direction.Right:
+        x = x + 1
+        break
+      case Direction.Down:
+        y = y + 1
+        break
+      case Direction.Up:
+        y = y - 1
+        break
+    }
+    this.changeControllableChar({ x, y, frame: 0 })
+  }
+
+  tick () {
+    // in-between, animate
+    if (this.controllableChar.frame !== 0) {
+      this.nextCharAnimation()
+      return
+    }
+    // Final Step => clear interval
+    if (!this.state.pressedKey) {
+      this.clearAnimation()
+      return
+    }
+    // First press => change dir only
+    if (this.controllableChar.dir !== this.state.pressedKey) {
+      this.changeControllableChar({ dir: this.state.pressedKey })
+      return
+    }
+    // Second press => start to walk
+    this.changeControllableChar({
+      frame: 1
     })
   }
 
