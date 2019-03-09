@@ -28,8 +28,7 @@ function loadImages (mapData: MapData, chars: Char[]) {
   }
 
   return Promise.all([
-    loadImage('foreground', mapData.mapForegroundImage),
-    loadImage('background', mapData.mapBackgroundImage)
+    loadImage('foreground', mapData.mapForegroundImage)
   ].concat(chars.map((c, i) => loadImage('char' + i, c.image))))
 }
 
@@ -38,11 +37,6 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Cha
 
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(
-      loadedImages.background,
-      0, 0, canvas.width, canvas.height,
-      0, 0, canvas.width, canvas.height
-    )
     charStates.forEach((charState, i) => {
       drawChar(ctx, loadedImages['char' + i], charState)
     })

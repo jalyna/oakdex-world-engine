@@ -18,21 +18,19 @@ export default function (viewport: Viewport, mapData: MapData, charState: CharSt
   if (charState.frame < FRAMES_PER_STEP) {
     switch (charState.dir) {
       case Direction.Left:
-        x = x - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        x = x - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Right:
-        x = x + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        x = x + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Down:
-        y = y + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        y = y + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Up:
-        y = y - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        y = y - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
     }
   }
-
-  console.log(-y + viewport.height/2)
 
   return {
     top: clamp(-y + (viewport.height * TILE_SIZE)/2, -(mapData.height * TILE_SIZE) + (viewport.height * TILE_SIZE), 0),

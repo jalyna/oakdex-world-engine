@@ -120,11 +120,19 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
           left: left,
           top: top
         }}>
-          <canvas
-            ref={this.canvas}
-            width={this.props.mapData.width * TILE_SIZE}
-            height={this.props.mapData.height * TILE_SIZE}
-            style={{ imageRendering: 'pixelated' }} />
+          <div style={{
+            position: 'relative',
+            imageRendering: 'pixelated',
+            width: this.props.mapData.width * TILE_SIZE,
+            height: this.props.mapData.height * TILE_SIZE,
+            backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
+          }}>
+            <canvas
+              ref={this.canvas}
+              width={this.props.mapData.width * TILE_SIZE}
+              height={this.props.mapData.height * TILE_SIZE}
+              style={{ imageRendering: 'pixelated', position: 'absolute' }} />
+          </div>
         </div>
       </div>
     )

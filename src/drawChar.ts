@@ -42,16 +42,16 @@ export default function drawChar (ctx: CanvasRenderingContext2D, image: HTMLImag
   if (charState.frame < FRAMES_PER_STEP) {
     switch (charState.dir) {
       case Direction.Left:
-        x = x - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        x = x - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Right:
-        x = x + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        x = x + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Down:
-        y = y + (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        y = y + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Up:
-        y = y - (charState.frame / FRAMES_PER_STEP) * TILE_SIZE
+        y = y - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
         break
     }
   }
