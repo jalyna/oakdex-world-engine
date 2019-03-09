@@ -1,4 +1,5 @@
-import { TILE_SIZE, MapData } from '.'
+import { MapData, ControllableCharState } from '.'
+import calculateViewport from './calculateViewport'
 
 interface LoadedImages {
   [key: string]: HTMLImageElement
@@ -32,19 +33,22 @@ function loadImages (mapData: MapData) {
   ])
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData) {
+export default function (canvas: HTMLCanvasElement, mapData: MapData, charState: ControllableCharState) {
   const ctx = canvas.getContext('2d')
 
   loadImages(mapData).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    const { top, left } = calculateViewport(canvas, mapData, charState)
     ctx.drawImage(
       loadedImages.background,
-      0, 0, canvas.width, canvas.height,
+      left, top, canvas.width, canvas.height,
       0, 0, canvas.width, canvas.height
     )
     ctx.drawImage(
       loadedImages.foreground,
-      0, 0, canvas.width, canvas.height,
+      left, top, canvas.width, canvas.height,
       0, 0, canvas.width, canvas.height
     )
   })

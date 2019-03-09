@@ -12,8 +12,8 @@ const mapData = require('./demo.gamemap.json')
 ReactDOM.render(
   <WorldEngine
     mapData={mapData}
-    viewport={{ width: 12, height: 10 }}
-    controllableChar={{ name: 'Heroine', image: charset1, x: 12, y: 14 }}
+    viewport={{ width: 19, height: 15 }}
+    controllableChar={{ name: 'Heroine', image: charset1, x: 36, y: 12 }}
     chars={[
       { name: 'Stranger', image: charset2, x: 13, y: 12, looksTo: 'top' }, // bottom is default
       { name: 'Other Person', image: charset3, x: 15, y: 12 }

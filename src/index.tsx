@@ -124,6 +124,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     if (!this.canvas.current) {
       return
     }
-    draw(this.canvas.current, this.props.mapData)
+    draw(this.canvas.current, this.props.mapData, this.state.controllableChar)
   }
 }
