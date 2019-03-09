@@ -36,11 +36,6 @@ async function onEnterStranger () {
   if (up2) {
     await actionHandler.moveChar('stranger-woman', Direction.Down)
   }
-  const left = await actionHandler.moveChar('stranger-woman', Direction.Left)
-  
-  if (left) {
-    await actionHandler.moveChar('stranger-woman', Direction.Right)
-  }
   actionHandler.enableMovement()
   console.log('DONE')
 }
