@@ -38,7 +38,13 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Cha
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const charStatesWithIndex = charStates.map((c, i) => ({ ...c, index: i }))
-    const sortedCharStates = charStatesWithIndex.sort((a, b) => a.y - b.y)
+    const sortedCharStates = charStatesWithIndex.sort((a, b) => {
+      if (a.walkThrough === b.walkThrough) {
+        return a.y <= b.y ? -1 : 1
+      }
+      return a.walkThrough ? -1 : 1
+    })
+    console.log(sortedCharStates)
     sortedCharStates.forEach((charState) => {
       drawChar(ctx, loadedImages['char' + charState.index], charState)
     })

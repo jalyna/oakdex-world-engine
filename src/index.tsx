@@ -15,20 +15,24 @@ export enum Direction {
   Right = 4
 }
 
-export interface CoordinatesWithLooksAt extends Coordinates {
-  looksAt: Coordinates,
+export interface CoordinatesWithSpecial extends Coordinates {
   special: string
 }
 
+export interface CoordinatesWithLooksAt extends CoordinatesWithSpecial {
+  looksAt: Coordinates
+}
+
 export interface CoordinateChange {
-  prev: CoordinatesWithLooksAt,
+  prev: CoordinatesWithSpecial,
   next: CoordinatesWithLooksAt
 }
 
 export interface Char extends Coordinates {
   image: string,
   name?: string,
-  dir?: Direction
+  dir?: Direction,
+  walkThrough?: boolean
 }
 
 export interface Credit {
@@ -71,7 +75,8 @@ export interface WorldEngineProps {
 export interface CharState extends Coordinates {
   dir: Direction,
   animationFrame: number,
-  progressFrame: number
+  progressFrame: number,
+  walkThrough?: boolean
 }
 
 export interface WorldEngineState {
@@ -84,13 +89,14 @@ export const TILE_SIZE = 16
 export const FRAMES_PER_STEP = 3
 export const FRAME_DURATION = 90
 
-function getInitialCharState ({ x, y, dir }: Char): CharState {
+function getInitialCharState ({ x, y, dir, walkThrough }: Char): CharState {
   return {
     x,
     y,
     dir: dir || Direction.Down,
     animationFrame: 0,
-    progressFrame: 0
+    progressFrame: 0,
+    walkThrough
   }
 }
 
@@ -254,9 +260,27 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.interval = null
   }
 
+  triggerOnWalksTo (oldCoordinates: Coordinates) {
+    this.props.onWalksTo({
+      prev: {
+        ...oldCoordinates,
+        special: this.props.mapData.specialTiles[oldCoordinates.y][oldCoordinates.x] || null 
+      },
+      next: {
+        looksAt: this.getNextCoordinates(),
+        x: this.controllableChar.x,
+        y: this.controllableChar.y,
+        special: this.props.mapData.specialTiles[this.controllableChar.y][this.controllableChar.x] || null
+      }
+    })
+  }
+
   finishStep () {
     const { x, y } = this.getNextCoordinates()
+    const prevX = this.controllableChar.x
+    const prevY = this.controllableChar.y
     this.changeControllableChar({ x, y, progressFrame: 0, animationFrame: 0 })
+    this.triggerOnWalksTo({ x: prevX, y: prevY })
   }
 
   getNextCoordinates (): Coordinates {
@@ -280,7 +304,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   getFieldData (x: number, y: number): Walkability {
-    const existingChar = this.state.chars.some((c) => c.x === x && c.y === y)
+    const existingChar = this.state.chars.some((c) => c.x === x && c.y === y && !c.walkThrough)
     if (existingChar) {
       return {
         top: 1,
@@ -326,6 +350,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     // First press => change dir only
     if (this.controllableChar.dir !== this.state.pressedKey) {
       this.changeControllableChar({ dir: this.state.pressedKey })
+      this.triggerOnWalksTo({ x: this.controllableChar.x, y: this.controllableChar.y })
       return
     }
     // Can not walk to next field
