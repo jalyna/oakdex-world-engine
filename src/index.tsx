@@ -70,12 +70,14 @@ export interface WorldEngineProps {
 
 export interface CharState extends Coordinates {
   dir: Direction,
-  frame: number
+  animationFrame: number,
+  progressFrame: number
 }
 
 export interface WorldEngineState {
   chars: CharState[],
-  pressedKey: Direction | null
+  pressedKey: Direction | null,
+  otherPressedKeys: Direction[]
 }
 
 export const TILE_SIZE = 16
@@ -87,7 +89,8 @@ function getInitialCharState ({ x, y, dir }: Char): CharState {
     x,
     y,
     dir: dir || Direction.Down,
-    frame: 0
+    animationFrame: 0,
+    progressFrame: 0
   }
 }
 
@@ -96,7 +99,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     super(props)
     this.state = {
       chars: [getInitialCharState(props.controllableChar)].concat(props.chars.map((c) => getInitialCharState(c))),
-      pressedKey: null
+      pressedKey: null,
+      otherPressedKeys: []
     }
     this.onKeyDown = this.onKeyDown.bind(this)
     this.onKeyUp = this.onKeyUp.bind(this)
@@ -204,13 +208,24 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.redraw()
   }
 
-  nextCharAnimation () {
-    if (this.controllableChar.frame === FRAMES_PER_STEP - 1) {
+  nextCharProgress () {
+    if (this.controllableChar.progressFrame === FRAMES_PER_STEP - 1) {
       this.finishStep()
       return
     }
     this.changeControllableChar({
-      frame: this.controllableChar.frame + 1
+      progressFrame: this.controllableChar.progressFrame + 1,
+      animationFrame: this.controllableChar.animationFrame + 1
+    })
+  }
+
+  nextCharAnimation () {
+    if (this.controllableChar.animationFrame === FRAMES_PER_STEP - 1) {
+      this.changeControllableChar({ animationFrame: 0 })
+      return
+    }
+    this.changeControllableChar({
+      animationFrame: this.controllableChar.animationFrame + 1
     })
   }
 
@@ -234,7 +249,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
 
   finishStep () {
     const { x, y } = this.getNextCoordinates()
-    this.changeControllableChar({ x, y, frame: 0 })
+    this.changeControllableChar({ x, y, progressFrame: 0, animationFrame: 0 })
   }
 
   getNextCoordinates (): Coordinates {
@@ -288,7 +303,11 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
 
   tick () {
     // in-between, animate
-    if (this.controllableChar.frame !== 0) {
+    if (this.controllableChar.progressFrame !== 0) {
+      this.nextCharProgress()
+      return
+    }
+    if (this.controllableChar.animationFrame !== 0) {
       this.nextCharAnimation()
       return
     }
@@ -304,11 +323,15 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     }
     // Can not walk to next field
     if (!this.isNextFieldWalkable()) {
+      this.changeControllableChar({
+        animationFrame: 1
+      })
       return
     }
     // Second press => start to walk
     this.changeControllableChar({
-      frame: 1
+      progressFrame: 1,
+      animationFrame: 1
     })
   }
 

@@ -15,19 +15,19 @@ export default function (viewport: Viewport, mapData: MapData, charState: CharSt
   let y = charState.y * TILE_SIZE
   let x = charState.x * TILE_SIZE
 
-  if (charState.frame < FRAMES_PER_STEP) {
+  if (charState.progressFrame < FRAMES_PER_STEP) {
     switch (charState.dir) {
       case Direction.Left:
-        x = x - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
+        x = x - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Right:
-        x = x + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
+        x = x + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Down:
-        y = y + Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
+        y = y + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
         break
       case Direction.Up:
-        y = y - Math.floor(charState.frame / FRAMES_PER_STEP * TILE_SIZE)
+        y = y - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
         break
     }
   }
