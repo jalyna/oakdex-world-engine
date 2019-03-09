@@ -120,10 +120,21 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.redraw()
   }
 
+  getAllChars (): Char[] {
+    let chars = this.props.chars.slice()
+    chars.unshift(this.props.controllableChar)
+    return chars
+  }
+
   redraw () {
     if (!this.canvas.current) {
       return
     }
-    draw(this.canvas.current, this.props.mapData, this.state.controllableChar)
+    draw(
+      this.canvas.current,
+      this.props.mapData,
+      this.getAllChars(),
+      this.state.controllableChar
+    )
   }
 }

@@ -14,9 +14,9 @@ import * as ReactDOM from 'react-dom'
 
 import WorldEngine from 'oakdex-world-engine'
 
-import charset1 from './charset1.png'
-import charset2 from './charset2.png'
-import charset3 from './charset3.png'
+import * as charset1 from './charset1.png'
+import * as charset2 from './charset2.png'
+import * as charset3 from './charset3.png'
 
 const mapData = require('./demo.gamemap.json')
 
