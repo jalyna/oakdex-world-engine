@@ -17,10 +17,10 @@ ReactDOM.render(
     controllableChar={{ id: 'heroine', name: 'Heroine', image: charset1, x: 36, y: 12 }}
     chars={[
       { id: 'stranger-woman', name: 'Stranger', image: charset2, x: 32, y: 13, dir: Direction.Up }, // bottom is default
-      { id: 'guy', image: charset3, x: 44, y: 12 },
+      { id: 'guy', image: charset3, x: 44, y: 12, lookNotInDirection: true },
       { id: 'umbrella-woman', image: charset4, x: 40, y: 20, dir: Direction.Left, walkThrough: true }
     ]}
-    onWalksTo={(id, { prev, next }) => console.log(id, 'walked to', next.x, next.y, next.looksAt.x, next.looksAt.y, next.special)}
+    onWalksTo={(charId, { prev, next }) => console.log(charId, 'walked to', next.x, next.y, next.looksAt.x, next.looksAt.y, next.special)}
     />,
   document.getElementById('app')
 )

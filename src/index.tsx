@@ -33,7 +33,8 @@ export interface Char extends Coordinates {
   image: string,
   name?: string,
   dir?: Direction,
-  walkThrough?: boolean
+  walkThrough?: boolean,
+  lookNotInDirection?: boolean
 }
 
 export interface Credit {
@@ -75,9 +76,11 @@ export interface WorldEngineProps {
 export interface CharState extends Coordinates {
   id: string,
   dir: Direction,
+  image: string,
   animationFrame: number,
   progressFrame: number,
-  walkThrough?: boolean
+  walkThrough?: boolean,
+  lookNotInDirection?: boolean
 }
 
 export interface WorldEngineState {
@@ -90,15 +93,12 @@ export const TILE_SIZE = 16
 export const FRAMES_PER_STEP = 3
 export const FRAME_DURATION = 90
 
-function getInitialCharState ({ id, x, y, dir, walkThrough }: Char): CharState {
+function getInitialCharState (char: Char): CharState {
   return {
-    id,
-    x,
-    y,
-    dir: dir || Direction.Down,
+    ...char,
+    dir: char.dir || Direction.Down,
     animationFrame: 0,
-    progressFrame: 0,
-    walkThrough
+    progressFrame: 0
   }
 }
 
@@ -169,8 +169,26 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     return null
   }
 
+
+
+  pressEnter () {
+    const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
+    const nextCoordinates = this.getNextCoordinates()
+    const nextChar = this.state.chars.find((c) => c.x === nextCoordinates.x && c.y === nextCoordinates.y && !c.walkThrough)
+    if (nextChar) {
+      if (!nextChar.lookNotInDirection) {
+        this.changeChar(nextChar.id, { dir: this.getOppositeDir() })
+      }
+    }
+  }
+
   onKeyDown (e: KeyboardEvent) {
-    let dir = this.getDir(e)
+    if (e.key === 'Enter') {
+      this.pressEnter()
+      return
+    }
+
+    const dir = this.getDir(e)
 
     if (!dir) {
       return
@@ -257,6 +275,19 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     })
   }
 
+  changeChar (charId: string, newFields: object) {
+    const chars = this.state.chars.slice().map((c) => {
+      if (c.id === charId) {
+        return {
+          ...c,
+          ...newFields
+        }
+      }
+      return c
+    })
+    this.setState({ chars })
+  }
+
   clearAnimation () {
     clearInterval(this.interval)
     this.interval = null
@@ -306,6 +337,19 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         break
     }
     return { x, y }
+  }
+
+  getOppositeDir (): Direction {
+    switch (this.controllableChar.dir) {
+      case Direction.Left:
+        return Direction.Right
+      case Direction.Right:
+        return Direction.Left
+      case Direction.Down:
+        return Direction.Up
+      case Direction.Up:
+        return Direction.Down
+    }
   }
 
   getFieldData (x: number, y: number): Walkability {
@@ -372,12 +416,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     })
   }
 
-  getAllChars (): Char[] {
-    let chars = this.props.chars.slice()
-    chars.unshift(this.props.controllableChar)
-    return chars
-  }
-
   redraw () {
     if (!this.canvas.current) {
       return
@@ -385,7 +423,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     draw(
       this.canvas.current,
       this.props.mapData,
-      this.getAllChars(),
       this.state.chars
     )
   }

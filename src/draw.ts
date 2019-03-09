@@ -32,10 +32,10 @@ function loadImages (mapData: MapData, chars: Char[]) {
   ].concat(chars.map((c) => loadImage('char-' + c.id, c.image))))
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Char[], charStates: CharState[]) {
+export default function (canvas: HTMLCanvasElement, mapData: MapData, charStates: CharState[]) {
   const ctx = canvas.getContext('2d')
 
-  loadImages(mapData, chars).then(() => {
+  loadImages(mapData, charStates).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const sortedCharStates = charStates.slice().sort((a, b) => {
       if (a.walkThrough === b.walkThrough) {
