@@ -78,8 +78,8 @@ export interface WorldEngineState {
 }
 
 export const TILE_SIZE = 16
-export const FRAMES_PER_STEP = 4
-export const FRAME_DURATION = 60
+export const FRAMES_PER_STEP = 3
+export const FRAME_DURATION = 90
 
 function getInitialCharState ({ x, y, dir }: Char): CharState {
   return {
@@ -196,7 +196,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   changeControllableChar (newFields: object) {
-    console.log(newFields)
     this.setState({
       chars: [{
         ...this.controllableChar,

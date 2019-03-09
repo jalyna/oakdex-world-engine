@@ -7,8 +7,9 @@ interface Offsets {
 
 const CHAR_SIZE = 32
 
-function calculateCharsetOffset (dir: Direction, percent: number): Offsets {
+function calculateCharsetOffset (dir: Direction, frame: number): Offsets {
   let top = CHAR_SIZE * 0
+  let left = CHAR_SIZE * 1
   switch (dir) {
     case Direction.Left:
       top = CHAR_SIZE * 1
@@ -20,14 +21,21 @@ function calculateCharsetOffset (dir: Direction, percent: number): Offsets {
       top = CHAR_SIZE * 3
       break
   }
+  if (frame !== 0) {
+    if (frame%2 === 0) {
+      left = CHAR_SIZE * 0
+    } else {
+      left = CHAR_SIZE * 2
+    }
+  }
   return {
     top,
-    left: CHAR_SIZE * 1
+    left
   }
 }
 
 export default function drawChar (ctx: CanvasRenderingContext2D, viewportOffset: Offsets, image: HTMLImageElement, charState: CharState) {
-  const { top, left } = calculateCharsetOffset(charState.dir || Direction.Down, 100)
+  const { top, left } = calculateCharsetOffset(charState.dir || Direction.Down, charState.frame)
   let x = charState.x * TILE_SIZE - viewportOffset.left
   let y = charState.y * TILE_SIZE - viewportOffset.top
 
