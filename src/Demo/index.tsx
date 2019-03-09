@@ -20,6 +20,8 @@ ReactDOM.render(
       { id: 'guy', image: charset3, x: 44, y: 12, lookNotInDirection: true },
       { id: 'umbrella-woman', image: charset4, x: 40, y: 20, dir: Direction.Left, walkThrough: true }
     ]}
+    onPressEnter={(charId, triggeredChar) => console.log('Pressing Enter For', triggeredChar.id)}
+    onOver={(charId, triggeredChar) => console.log('Walked over', triggeredChar.id)}
     onWalksTo={(charId, { prev, next }) => console.log(charId, 'walked to', next.x, next.y, next.looksAt.x, next.looksAt.y, next.special)}
     />,
   document.getElementById('app')

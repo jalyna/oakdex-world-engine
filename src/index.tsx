@@ -70,7 +70,9 @@ export interface WorldEngineProps {
   viewport: Viewport,
   controllableChar: Char,
   chars: Char[],
-  onWalksTo?: (charId: string, change: CoordinateChange) => void
+  onWalksTo?: (charId: string, change: CoordinateChange) => void,
+  onPressEnter?: (charId: string, triggeredChar: CharState) => void,
+  onOver?: (charId: string, triggeredChar: CharState) => void
 }
 
 export interface CharState extends Coordinates {
@@ -174,11 +176,17 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
 
   pressEnter () {
     const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
+    if (hoverChar && this.props.onPressEnter) {
+      this.props.onPressEnter(this.controllableChar.id, { ...hoverChar })
+    }
     const nextCoordinates = this.getNextCoordinates()
     const nextChar = this.state.chars.find((c) => c.x === nextCoordinates.x && c.y === nextCoordinates.y && !c.walkThrough)
     if (nextChar) {
       if (!nextChar.lookNotInDirection) {
         this.changeChar(nextChar.id, { dir: this.getOppositeDir() })
+      }
+      if (this.props.onPressEnter) {
+        this.props.onPressEnter(this.controllableChar.id, { ...nextChar })
       }
     }
   }
@@ -295,6 +303,12 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   triggerOnWalksTo (oldCoordinates: Coordinates) {
+    if (this.props.onOver) {
+      const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
+      if (overChar) {
+        this.props.onOver(this.controllableChar.id, { ...overChar })
+      }
+    }
     if (!this.props.onWalksTo) {
       return
     }
