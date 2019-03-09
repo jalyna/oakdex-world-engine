@@ -233,6 +233,11 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   finishStep () {
+    const { x, y } = this.getNextCoordinates()
+    this.changeControllableChar({ x, y, frame: 0 })
+  }
+
+  getNextCoordinates (): Coordinates {
     let x = this.controllableChar.x
     let y = this.controllableChar.y
     switch (this.controllableChar.dir) {
@@ -249,7 +254,36 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         y = y - 1
         break
     }
-    this.changeControllableChar({ x, y, frame: 0 })
+    return { x, y }
+  }
+
+  getFieldData (x: number, y: number): Walkability {
+    const existingChar = this.state.chars.some((c) => c.x === x && c.y === y)
+    if (existingChar) {
+      return {
+        top: 1,
+        left: 1,
+        right: 1,
+        bottom: 1
+      }
+    }
+    return this.props.mapData.walkability[y][x]
+  }
+
+  isNextFieldWalkable (): boolean {
+    const { x, y } = this.getNextCoordinates()
+    const fieldData = this.getFieldData(x, y)
+    switch (this.controllableChar.dir) {
+      case Direction.Left:
+        return fieldData.right === 0
+      case Direction.Right:
+        return fieldData.left === 0
+      case Direction.Down:
+        return fieldData.top === 0
+      case Direction.Up:
+        return fieldData.bottom === 0
+    }
+    return false
   }
 
   tick () {
@@ -266,6 +300,10 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     // First press => change dir only
     if (this.controllableChar.dir !== this.state.pressedKey) {
       this.changeControllableChar({ dir: this.state.pressedKey })
+      return
+    }
+    // Can not walk to next field
+    if (!this.isNextFieldWalkable()) {
       return
     }
     // Second press => start to walk
