@@ -1,4 +1,4 @@
-import { MapData, ControllableCharState, Char } from '.'
+import { MapData, CharState, Char } from '.'
 import calculateViewport from './calculateViewport'
 import drawChar from './drawChar'
 
@@ -34,21 +34,21 @@ function loadImages (mapData: MapData, chars: Char[]) {
   ].concat(chars.map((c, i) => loadImage('char' + i, c.image))))
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Char[], charState: ControllableCharState) {
+export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Char[], charStates: CharState[]) {
   const ctx = canvas.getContext('2d')
 
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    const { top, left } = calculateViewport(canvas, mapData, charState)
+    const { top, left } = calculateViewport(canvas, mapData, charStates[0])
     ctx.drawImage(
       loadedImages.background,
       left, top, canvas.width, canvas.height,
       0, 0, canvas.width, canvas.height
     )
-    chars.forEach((char, i) => {
-      drawChar(ctx, { top, left }, loadedImages['char' + i], char)
+    charStates.forEach((charState, i) => {
+      drawChar(ctx, { top, left }, loadedImages['char' + i], charState)
     })
     ctx.drawImage(
       loadedImages.foreground,

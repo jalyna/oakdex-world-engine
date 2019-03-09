@@ -1,4 +1,4 @@
-import { TILE_SIZE, MapData, ControllableCharState } from '.'
+import { TILE_SIZE, MapData, CharState } from '.'
 
 export interface Offsets {
   top: number,
@@ -11,7 +11,7 @@ function clamp (value: number, min: number, max: number): number {
   return value
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData, charState: ControllableCharState): Offsets {
+export default function (canvas: HTMLCanvasElement, mapData: MapData, charState: CharState): Offsets {
   return {
     top: clamp((charState.y * TILE_SIZE) - canvas.height/2, 0, (mapData.height * TILE_SIZE) - canvas.height),
     left: clamp((charState.x * TILE_SIZE) - canvas.width/2, 0, (mapData.width * TILE_SIZE) - canvas.width)
