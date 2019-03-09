@@ -1,10 +1,13 @@
 var path = require('path');
 
 module.exports = {
-  entry: "./src/index.tsx",
+  entry: {
+    bundle: "./src/index.tsx",
+    demo: "./src/Demo/index.tsx"
+  },
 
   output: {
-    filename: "bundle.js",
+    filename: "[name].js",
     path: __dirname + "/dist"
   },
 
