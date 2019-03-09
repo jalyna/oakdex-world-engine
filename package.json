@@ -1,6 +1,6 @@
 {
   "name": "oakdex-world-engine",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jalyna/oakdex-world-engine.git"
@@ -27,10 +27,8 @@
   "dependencies": {
     "@types/react": "^16.7.20",
     "@types/react-dom": "^16.0.11",
-    "@types/styled-components": "^4.1.6",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "styled-components": "^4.1.3"
+    "react-dom": "^16.7.0"
   },
   "devDependencies": {
     "@types/enzyme": "^3.9.0",

@@ -162,7 +162,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
 
     if (!this.interval) {
       this.tick()
-      this.interval = setInterval(this.tick, FRAME_DURATION)
+      this.interval = window.setInterval(this.tick, FRAME_DURATION)
     }
   }
 
@@ -221,7 +221,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.redraw()
     document.addEventListener('keydown', this.onKeyDown)
     document.addEventListener('keyup', this.onKeyUp)
-    this.interval = setInterval(this.tick, FRAME_DURATION)
+    this.interval = window.setInterval(this.tick, FRAME_DURATION)
     this.actionHandler = {
       moveChar: this.moveChar,
       changeCharDir: this.changeCharDir,

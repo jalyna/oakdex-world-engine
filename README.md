@@ -16,7 +16,7 @@ npm install oakdex-world-engine --save
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import WorldEngine, { Direction, ActionHandler } from '..'
+import WorldEngine, { Direction, ActionHandler } from 'oakdex-world-engine'
 
 import * as charset1 from './charset1.png'
 import * as charset2 from './charset2.png'
