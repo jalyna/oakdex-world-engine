@@ -29,7 +29,7 @@ function loadImages (mapData: MapData, chars: Char[]) {
 
   return Promise.all([
     loadImage('foreground', mapData.mapForegroundImage)
-  ].concat(chars.map((c, i) => loadImage('char' + i, c.image))))
+  ].concat(chars.map((c) => loadImage('char-' + c.id, c.image))))
 }
 
 export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Char[], charStates: CharState[]) {
@@ -37,16 +37,14 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, chars: Cha
 
   loadImages(mapData, chars).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    const charStatesWithIndex = charStates.map((c, i) => ({ ...c, index: i }))
-    const sortedCharStates = charStatesWithIndex.sort((a, b) => {
+    const sortedCharStates = charStates.slice().sort((a, b) => {
       if (a.walkThrough === b.walkThrough) {
         return a.y <= b.y ? -1 : 1
       }
       return a.walkThrough ? -1 : 1
     })
-    console.log(sortedCharStates)
     sortedCharStates.forEach((charState) => {
-      drawChar(ctx, loadedImages['char' + charState.index], charState)
+      drawChar(ctx, loadedImages['char-' + charState.id], charState)
     })
     ctx.drawImage(
       loadedImages.foreground,

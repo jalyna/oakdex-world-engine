@@ -29,6 +29,7 @@ export interface CoordinateChange {
 }
 
 export interface Char extends Coordinates {
+  id: string,
   image: string,
   name?: string,
   dir?: Direction,
@@ -68,11 +69,11 @@ export interface WorldEngineProps {
   viewport: Viewport,
   controllableChar: Char,
   chars: Char[],
-  onWalksTo: (change: CoordinateChange) => void,
-  onPressEnter: (current: CoordinatesWithLooksAt) => void
+  onWalksTo?: (charId: string, change: CoordinateChange) => void
 }
 
 export interface CharState extends Coordinates {
+  id: string,
   dir: Direction,
   animationFrame: number,
   progressFrame: number,
@@ -89,8 +90,9 @@ export const TILE_SIZE = 16
 export const FRAMES_PER_STEP = 3
 export const FRAME_DURATION = 90
 
-function getInitialCharState ({ x, y, dir, walkThrough }: Char): CharState {
+function getInitialCharState ({ id, x, y, dir, walkThrough }: Char): CharState {
   return {
+    id,
     x,
     y,
     dir: dir || Direction.Down,
@@ -261,7 +263,10 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   triggerOnWalksTo (oldCoordinates: Coordinates) {
-    this.props.onWalksTo({
+    if (!this.props.onWalksTo) {
+      return
+    }
+    this.props.onWalksTo(this.controllableChar.id, {
       prev: {
         ...oldCoordinates,
         special: this.props.mapData.specialTiles[oldCoordinates.y][oldCoordinates.x] || null 
