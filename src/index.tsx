@@ -1,7 +1,15 @@
 import * as React from 'react'
 
+import { MapData, Walkability } from './MapData'
+import { Char, CharState, getInitialCharState } from './CharData'
 import draw from './draw'
+import timeout from './timeout'
+import getNextCoordinates from './getNextCoordinates'
+import getDir, { getOppositeDir } from './getDir'
 import calculateViewport from './calculateViewport'
+import isNextFieldWalkable from './isNextFieldWalkable'
+
+export { MapData, CharState, Walkability }
 
 export interface Coordinates {
   x: number,
@@ -26,38 +34,6 @@ export interface CoordinatesWithLooksAt extends CoordinatesWithSpecial {
 export interface CoordinateChange {
   prev: CoordinatesWithSpecial,
   next: CoordinatesWithLooksAt
-}
-
-export interface Char extends Coordinates {
-  id: string,
-  image: string,
-  name?: string,
-  dir?: Direction,
-  walkThrough?: boolean,
-  lookNotInDirection?: boolean
-}
-
-export interface Credit {
-  name: string,
-  url?: string
-}
-
-export interface Walkability {
-  top: number,
-  left: number,
-  right: number,
-  bottom: number
-}
-
-export interface MapData {
-  title: string,
-  width: number,
-  height: number,
-  mapBackgroundImage: string, // base64
-  mapForegroundImage: string, // base64
-  walkability: Walkability[][],
-  specialTiles: (string | null)[][],
-  credits?: Credit[]
 }
 
 export interface Viewport {
@@ -87,17 +63,6 @@ export interface WorldEngineProps {
   onLoaded?: (actionHandler: ActionHandler) => void
 }
 
-export interface CharState extends Coordinates {
-  id: string,
-  dir: Direction,
-  image: string,
-  animationFrame: number,
-  progressFrame: number,
-  name?: string,
-  walkThrough?: boolean,
-  lookNotInDirection?: boolean
-}
-
 export interface WorldEngineState {
   chars: CharState[],
   pressedKey: Direction | null,
@@ -108,19 +73,6 @@ export interface WorldEngineState {
 export const TILE_SIZE = 16
 export const FRAMES_PER_STEP = 3
 export const FRAME_DURATION = 90
-
-function getInitialCharState (char: Char): CharState {
-  return {
-    ...char,
-    dir: char.dir || Direction.Down,
-    animationFrame: 0,
-    progressFrame: 0
-  }
-}
-
-function timeout (ms: number): Promise<undefined> {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 export default class WorldEngine extends React.Component<WorldEngineProps, WorldEngineState> {
   constructor (props: WorldEngineProps) {
@@ -173,37 +125,16 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     )
   }
 
-  getDir (e: KeyboardEvent): Direction | null {
-    switch (e.key) {
-      case 'ArrowUp':
-      case 'w':
-        return Direction.Up
-      case 'ArrowDown':
-      case 's':
-        return Direction.Down
-      case 'ArrowLeft':
-      case 'a':
-        return Direction.Left
-      case 'ArrowRight':
-      case 'd':
-        return Direction.Right
-    }
-
-    return null
-  }
-
-
-
   pressEnter () {
     const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
     if (hoverChar && this.props.onPressEnter) {
       this.props.onPressEnter(this.controllableChar.id, { ...hoverChar })
     }
-    const nextCoordinates = this.getNextCoordinates()
+    const nextCoordinates = getNextCoordinates(this.state.chars)
     const nextChar = this.state.chars.find((c) => c.x === nextCoordinates.x && c.y === nextCoordinates.y && !c.walkThrough)
     if (nextChar) {
       if (!nextChar.lookNotInDirection) {
-        this.changeChar(nextChar.id, { dir: this.getOppositeDir() })
+        this.changeChar(nextChar.id, { dir: getOppositeDir(this.controllableChar.dir) })
       }
       if (this.props.onPressEnter) {
         this.props.onPressEnter(this.controllableChar.id, { ...nextChar })
@@ -217,7 +148,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       return
     }
 
-    const dir = this.getDir(e)
+    const dir = getDir(e)
 
     if (!dir) {
       return
@@ -236,7 +167,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   onKeyUp (e: KeyboardEvent) {
-    let dir = this.getDir(e)
+    let dir = getDir(e)
 
     if (!dir) {
       return
@@ -271,7 +202,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         await this.changeCharDir(charId, dir)
       }
 
-      if (!this.isNextFieldWalkable(charId)) {
+      if (!isNextFieldWalkable(this.props.mapData, this.state.chars, charId)) {
         resolve(false)
         return
       }
@@ -381,7 +312,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         special: this.props.mapData.specialTiles[oldCoordinates.y][oldCoordinates.x] || null 
       },
       next: {
-        looksAt: this.getNextCoordinates(),
+        looksAt: getNextCoordinates(this.state.chars),
         x: this.controllableChar.x,
         y: this.controllableChar.y,
         special: this.props.mapData.specialTiles[this.controllableChar.y][this.controllableChar.x] || null
@@ -394,77 +325,11 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     if (charId) {
       char = this.state.chars.find((c) => c.id === charId)
     }
-    const { x, y } = this.getNextCoordinates(char.id)
+    const { x, y } = getNextCoordinates(this.state.chars, char.id)
     const prevX = char.x
     const prevY = char.y
     this.changeChar(char.id, { x, y, progressFrame: 0, animationFrame: 0 })
     this.triggerOnWalksTo(char.id, { x: prevX, y: prevY })
-  }
-
-  getNextCoordinates (charId?: string): Coordinates {
-    let char = this.controllableChar
-    if (charId) {
-      char = this.state.chars.find((c) => c.id === charId)
-    }
-    let x = char.x
-    let y = char.y
-    switch (char.dir) {
-      case Direction.Left:
-        x = x - 1
-        break
-      case Direction.Right:
-        x = x + 1
-        break
-      case Direction.Down:
-        y = y + 1
-        break
-      case Direction.Up:
-        y = y - 1
-        break
-    }
-    return { x, y }
-  }
-
-  getOppositeDir (): Direction {
-    switch (this.controllableChar.dir) {
-      case Direction.Left:
-        return Direction.Right
-      case Direction.Right:
-        return Direction.Left
-      case Direction.Down:
-        return Direction.Up
-      case Direction.Up:
-        return Direction.Down
-    }
-  }
-
-  getFieldData (x: number, y: number): Walkability {
-    const existingChar = this.state.chars.some((c) => c.x === x && c.y === y && !c.walkThrough)
-    if (existingChar) {
-      return {
-        top: 1,
-        left: 1,
-        right: 1,
-        bottom: 1
-      }
-    }
-    return this.props.mapData.walkability[y][x]
-  }
-
-  isNextFieldWalkable (charId: string): boolean {
-    const { x, y } = this.getNextCoordinates(charId)
-    const fieldData = this.getFieldData(x, y)
-    switch (this.controllableChar.dir) {
-      case Direction.Left:
-        return fieldData.right === 0
-      case Direction.Right:
-        return fieldData.left === 0
-      case Direction.Down:
-        return fieldData.top === 0
-      case Direction.Up:
-        return fieldData.bottom === 0
-    }
-    return false
   }
 
   tick () {
@@ -493,7 +358,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       return
     }
     // Can not walk to next field
-    if (!this.isNextFieldWalkable(this.controllableChar.id)) {
+    if (!isNextFieldWalkable(this.props.mapData, this.state.chars, this.controllableChar.id)) {
       this.changeControllableChar({
         animationFrame: 1
       })

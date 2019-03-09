@@ -1,4 +1,4 @@
-import { MapData, CharState, Char } from '.'
+import { MapData, CharState } from '.'
 import drawChar from './drawChar'
 
 interface LoadedImages {
@@ -21,7 +21,7 @@ function loadImage (key: string, src: string) {
   })
 }
 
-function loadImages (mapData: MapData, chars: Char[]) {
+function loadImages (mapData: MapData, chars: CharState[]) {
   if (currentMap !== mapData.title) {
     loadedImages = {}
     currentMap = mapData.title
