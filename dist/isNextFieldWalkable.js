@@ -2,17 +2,18 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
 const getNextCoordinates_1 = require("./getNextCoordinates");
+const BLOCKED = {
+    top: 1,
+    left: 1,
+    right: 1,
+    bottom: 1
+};
 function getFieldData(mapData, chars, x, y) {
     const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough);
     if (existingChar) {
-        return {
-            top: 1,
-            left: 1,
-            right: 1,
-            bottom: 1
-        };
+        return BLOCKED;
     }
-    return mapData.walkability[y][x];
+    return mapData.walkability[y][x] || BLOCKED;
 }
 function default_1(mapData, chars, charId) {
     const { x, y } = getNextCoordinates_1.default(chars, charId);

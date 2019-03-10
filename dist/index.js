@@ -8,6 +8,7 @@ const getNextCoordinates_1 = require("./getNextCoordinates");
 const getDir_1 = require("./getDir");
 const calculateViewport_1 = require("./calculateViewport");
 const isNextFieldWalkable_1 = require("./isNextFieldWalkable");
+const TouchPad_1 = require("./TouchPad");
 var Direction;
 (function (Direction) {
     Direction[Direction["Up"] = 1] = "Up";
@@ -32,6 +33,8 @@ class WorldEngine extends React.Component {
         this.tick = this.tick.bind(this);
         this.moveChar = this.moveChar.bind(this);
         this.changeCharDir = this.changeCharDir.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
     }
     render() {
         const { top, left } = calculateViewport_1.default(this.props.viewport, this.props.mapData, this.controllableChar);
@@ -53,7 +56,8 @@ class WorldEngine extends React.Component {
                         height: this.props.mapData.height * exports.TILE_SIZE,
                         backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
                     } },
-                    React.createElement("canvas", { ref: this.canvas, width: this.props.mapData.width * exports.TILE_SIZE, height: this.props.mapData.height * exports.TILE_SIZE, style: { imageRendering: 'pixelated', position: 'absolute' } })))));
+                    React.createElement("canvas", { ref: this.canvas, width: this.props.mapData.width * exports.TILE_SIZE, height: this.props.mapData.height * exports.TILE_SIZE, style: { imageRendering: 'pixelated', position: 'absolute' } }))),
+            React.createElement(TouchPad_1.default, { onMouseDown: this.onMouseDown, onMouseUp: this.onMouseUp })));
     }
     pressEnter() {
         const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
@@ -71,15 +75,32 @@ class WorldEngine extends React.Component {
             }
         }
     }
-    onKeyDown(e) {
-        if (e.key === 'Enter' || e.key === ' ') {
+    onMouseDown(dir) {
+        if (dir === 'Enter') {
             this.pressEnter();
             return;
         }
-        const dir = getDir_1.default(e);
-        if (!dir) {
-            return;
+        if (typeof dir !== 'string') {
+            this.pressDir(dir);
         }
+    }
+    onMouseUp(dir) {
+        if (typeof dir !== 'string') {
+            this.stopPressDir(dir);
+        }
+    }
+    stopPressDir(dir) {
+        console.log('STOP', dir);
+        let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir);
+        const lastKey = otherPressedKeys[otherPressedKeys.length - 1];
+        otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey);
+        this.setState({
+            pressedKey: lastKey || null,
+            otherPressedKeys
+        });
+    }
+    pressDir(dir) {
+        console.log('XXX', dir);
         this.setState({
             pressedKey: dir,
             otherPressedKeys: this.state.otherPressedKeys.slice()
@@ -90,18 +111,21 @@ class WorldEngine extends React.Component {
             this.interval = window.setInterval(this.tick, exports.FRAME_DURATION);
         }
     }
-    onKeyUp(e) {
-        let dir = getDir_1.default(e);
-        if (!dir) {
+    onKeyDown(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            this.pressEnter();
             return;
         }
-        let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir);
-        const lastKey = otherPressedKeys[otherPressedKeys.length - 1];
-        otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey);
-        this.setState({
-            pressedKey: lastKey || null,
-            otherPressedKeys
-        });
+        const dir = getDir_1.default(e);
+        if (dir) {
+            this.pressDir(dir);
+        }
+    }
+    onKeyUp(e) {
+        let dir = getDir_1.default(e);
+        if (dir) {
+            this.stopPressDir(dir);
+        }
     }
     changeCharDir(charId, dir) {
         return new Promise((resolve) => {

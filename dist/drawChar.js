@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
+const calculateProgressOffset_1 = require("./calculateProgressOffset");
 const CHAR_SIZE = 32;
 function calculateCharsetOffset(dir, frame) {
     let top = CHAR_SIZE * 0;
@@ -31,24 +32,9 @@ function calculateCharsetOffset(dir, frame) {
 }
 function drawChar(ctx, image, charState) {
     const { top, left } = calculateCharsetOffset(charState.dir || _1.Direction.Down, charState.animationFrame);
-    let x = charState.x * _1.TILE_SIZE;
-    let y = charState.y * _1.TILE_SIZE;
-    if (charState.progressFrame < _1.FRAMES_PER_STEP) {
-        switch (charState.dir) {
-            case _1.Direction.Left:
-                x = x - Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Right:
-                x = x + Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Down:
-                y = y + Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Up:
-                y = y - Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-        }
-    }
+    const offset = calculateProgressOffset_1.default(charState);
+    const x = charState.x * _1.TILE_SIZE + offset.x;
+    const y = charState.y * _1.TILE_SIZE + offset.y;
     ctx.drawImage(image, left, top, CHAR_SIZE, CHAR_SIZE, x - 8, y - 16, CHAR_SIZE, CHAR_SIZE);
     if (charState.name) {
         ctx.font = 'normal 8px Verdana';

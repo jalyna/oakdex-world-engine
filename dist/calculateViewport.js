@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
+const calculateProgressOffset_1 = require("./calculateProgressOffset");
 function clamp(value, min, max) {
     if (value < min)
         return min;
@@ -9,24 +10,9 @@ function clamp(value, min, max) {
     return value;
 }
 function default_1(viewport, mapData, charState) {
-    let y = charState.y * _1.TILE_SIZE;
-    let x = charState.x * _1.TILE_SIZE;
-    if (charState.progressFrame < _1.FRAMES_PER_STEP) {
-        switch (charState.dir) {
-            case _1.Direction.Left:
-                x = x - Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Right:
-                x = x + Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Down:
-                y = y + Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-            case _1.Direction.Up:
-                y = y - Math.floor(charState.progressFrame / _1.FRAMES_PER_STEP * _1.TILE_SIZE);
-                break;
-        }
-    }
+    const offset = calculateProgressOffset_1.default(charState);
+    const y = charState.y * _1.TILE_SIZE + offset.y;
+    const x = charState.x * _1.TILE_SIZE + offset.x;
     return {
         top: clamp(-y + (viewport.height * _1.TILE_SIZE) / 2, -(mapData.height * _1.TILE_SIZE) + (viewport.height * _1.TILE_SIZE), 0),
         left: clamp(-x + (viewport.width * _1.TILE_SIZE) / 2, -(mapData.width * _1.TILE_SIZE) + (viewport.width * _1.TILE_SIZE), 0)

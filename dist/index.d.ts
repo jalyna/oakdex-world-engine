@@ -79,6 +79,10 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     private actionHandler;
     render(): JSX.Element;
     pressEnter(): void;
+    onMouseDown(dir: Direction | string): void;
+    onMouseUp(dir: Direction | string): void;
+    stopPressDir(dir: Direction): void;
+    pressDir(dir: Direction): void;
     onKeyDown(e: KeyboardEvent): void;
     onKeyUp(e: KeyboardEvent): void;
     changeCharDir(charId: string, dir: Direction): Promise<undefined>;
