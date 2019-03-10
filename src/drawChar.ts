@@ -1,4 +1,5 @@
-import { CharState, TILE_SIZE, FRAMES_PER_STEP, Direction } from '.'
+import { CharState, TILE_SIZE, Direction } from '.'
+import calculateProgressOffset from './calculateProgressOffset'
 
 interface Offsets {
   top: number,
@@ -36,25 +37,9 @@ function calculateCharsetOffset (dir: Direction, frame: number): Offsets {
 
 export default function drawChar (ctx: CanvasRenderingContext2D, image: HTMLImageElement, charState: CharState) {
   const { top, left } = calculateCharsetOffset(charState.dir || Direction.Down, charState.animationFrame)
-  let x = charState.x * TILE_SIZE
-  let y = charState.y * TILE_SIZE
-
-  if (charState.progressFrame < FRAMES_PER_STEP) {
-    switch (charState.dir) {
-      case Direction.Left:
-        x = x - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Right:
-        x = x + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Down:
-        y = y + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Up:
-        y = y - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-    }
-  }
+  const offset = calculateProgressOffset(charState)
+  const x = charState.x * TILE_SIZE + offset.x
+  const y = charState.y * TILE_SIZE + offset.y
 
   ctx.drawImage(
     image,

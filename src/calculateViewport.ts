@@ -1,4 +1,5 @@
-import { TILE_SIZE, FRAMES_PER_STEP, Viewport, MapData, CharState, Direction } from '.'
+import { TILE_SIZE, Viewport, MapData, CharState } from '.'
+import calculateProgressOffset from './calculateProgressOffset'
 
 export interface Offsets {
   top: number,
@@ -12,25 +13,9 @@ function clamp (value: number, min: number, max: number): number {
 }
 
 export default function (viewport: Viewport, mapData: MapData, charState: CharState): Offsets {
-  let y = charState.y * TILE_SIZE
-  let x = charState.x * TILE_SIZE
-
-  if (charState.progressFrame < FRAMES_PER_STEP) {
-    switch (charState.dir) {
-      case Direction.Left:
-        x = x - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Right:
-        x = x + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Down:
-        y = y + Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-      case Direction.Up:
-        y = y - Math.floor(charState.progressFrame / FRAMES_PER_STEP * TILE_SIZE)
-        break
-    }
-  }
+  const offset = calculateProgressOffset(charState)
+  const y = charState.y * TILE_SIZE + offset.y
+  const x = charState.x * TILE_SIZE + offset.x
 
   return {
     top: clamp(-y + (viewport.height * TILE_SIZE)/2, -(mapData.height * TILE_SIZE) + (viewport.height * TILE_SIZE), 0),
