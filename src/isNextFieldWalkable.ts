@@ -1,17 +1,19 @@
 import { CharState, Walkability, MapData, Direction } from '.'
 import getNextCoordinates from './getNextCoordinates'
 
+const BLOCKED = {
+  top: 1,
+  left: 1,
+  right: 1,
+  bottom: 1
+}
+
 function getFieldData (mapData: MapData, chars: CharState[], x: number, y: number): Walkability {
   const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough)
   if (existingChar) {
-    return {
-      top: 1,
-      left: 1,
-      right: 1,
-      bottom: 1
-    }
+    return BLOCKED
   }
-  return mapData.walkability[y][x]
+  return mapData.walkability[y][x] || BLOCKED
 }
 
 export default function (mapData: MapData, chars: CharState[], charId: string): boolean {

@@ -1,5 +1,5 @@
 import calculateProgressOffset from '../calculateProgressOffset'
-import { CharState, Direction } from '..'
+import { Direction } from '..'
 
 describe('.calculateProgressOffset', () => {
   it('is 0 if nothing in progress', () => {
