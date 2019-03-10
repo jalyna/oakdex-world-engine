@@ -22,5 +22,5 @@ module.exports = {
     "src"
   ],
   "snapshotSerializers": ["enzyme-to-json/serializer"],
-  "setupFilesAfterEnv": ["<rootDir>/src/setupEnzyme.ts"]
+  "setupFilesAfterEnv": ["<rootDir>/src/setupEnzyme.ts", "jest-canvas-mock"]
 }

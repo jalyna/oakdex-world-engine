@@ -8,3 +8,4 @@ ratings:
 
 exclude_paths:
 - "dist/**/*"
+- "**/__tests__"
