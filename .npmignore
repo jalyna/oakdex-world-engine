@@ -4,7 +4,6 @@ jest.config.js
 webpack.config.js
 tsconfig.json
 docs
-src
 dist/Demo
 dist/demo.js
 dist/demo.d.ts
