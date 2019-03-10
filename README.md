@@ -4,6 +4,10 @@
 
 ![Demo](docs/demo.gif)
 
+With Mobile Controls:
+
+![Mobile Control](docs/mobile.png)
+
 Based on [oakdex-world-editor](https://github.com/jalyna/oakdex-world-editor).
 
 ## Getting Started

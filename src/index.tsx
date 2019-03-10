@@ -7,6 +7,7 @@ import getNextCoordinates from './getNextCoordinates'
 import getDir, { getOppositeDir } from './getDir'
 import calculateViewport from './calculateViewport'
 import isNextFieldWalkable from './isNextFieldWalkable'
+import TouchPad from './TouchPad'
 
 export { CharState }
 
@@ -107,6 +108,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.tick = this.tick.bind(this)
     this.moveChar = this.moveChar.bind(this)
     this.changeCharDir = this.changeCharDir.bind(this)
+    this.onMouseDown = this.onMouseDown.bind(this)
+    this.onMouseUp = this.onMouseUp.bind(this)
   }
 
   private canvas = React.createRef<HTMLCanvasElement>()
@@ -141,6 +144,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
               style={{ imageRendering: 'pixelated', position: 'absolute' }} />
           </div>
         </div>
+        <TouchPad onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp} />
       </div>
     )
   }
@@ -162,18 +166,37 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     }
   }
 
-  onKeyDown (e: KeyboardEvent) {
-    if (e.key === 'Enter' || e.key === ' ') {
+  onMouseDown (dir: Direction | string) {
+    if (dir === 'Enter') {
       this.pressEnter()
       return
     }
 
-    const dir = getDir(e)
-
-    if (!dir) {
-      return
+    if (typeof dir !== 'string') {
+      this.pressDir(dir)
     }
+  }
 
+  onMouseUp (dir: Direction | string) {
+    if (typeof dir !== 'string') {
+      this.stopPressDir(dir)
+    }
+  }
+
+  stopPressDir (dir: Direction) {
+    console.log('STOP', dir)
+    let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir)
+    const lastKey = otherPressedKeys[otherPressedKeys.length - 1]
+    otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey)
+
+    this.setState({
+      pressedKey: lastKey || null,
+      otherPressedKeys
+    })
+  }
+
+  pressDir (dir: Direction) {
+    console.log('XXX', dir)
     this.setState({
       pressedKey: dir,
       otherPressedKeys: this.state.otherPressedKeys.slice()
@@ -186,21 +209,25 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     }
   }
 
-  onKeyUp (e: KeyboardEvent) {
-    let dir = getDir(e)
-
-    if (!dir) {
+  onKeyDown (e: KeyboardEvent) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      this.pressEnter()
       return
     }
 
-    let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir)
-    const lastKey = otherPressedKeys[otherPressedKeys.length - 1]
-    otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey)
+    const dir = getDir(e)
 
-    this.setState({
-      pressedKey: lastKey || null,
-      otherPressedKeys
-    })
+    if (dir) {
+      this.pressDir(dir)
+    }
+  }
+
+  onKeyUp (e: KeyboardEvent) {
+    let dir = getDir(e)
+
+    if (dir) {
+      this.stopPressDir(dir)
+    }
   }
 
   changeCharDir (charId: string, dir: Direction): Promise<undefined> {
