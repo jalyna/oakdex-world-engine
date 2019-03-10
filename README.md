@@ -1,6 +1,6 @@
 # <img src="https://v20.imgup.net/oakdex_logfbad.png" alt="fixer" width=282>
 
-[![Build Status](https://travis-ci.org/jalyna/oakdex-world-engine.svg?branch=master)](https://travis-ci.org/jalyna/oakdex-world-engine) [![Maintainability](https://api.codeclimate.com/v1/badges/e8928c27d48b7880d407/maintainability)](https://codeclimate.com/github/jalyna/oakdex-world-engine/maintainability) ![David](https://img.shields.io/david/jalyna/oakdex-world-engine.svg)
+[![npm version](https://badge.fury.io/js/oakdex-world-engine.svg)](https://badge.fury.io/js/oakdex-world-engine) [![Build Status](https://travis-ci.org/jalyna/oakdex-world-engine.svg?branch=master)](https://travis-ci.org/jalyna/oakdex-world-engine) [![Maintainability](https://api.codeclimate.com/v1/badges/e8928c27d48b7880d407/maintainability)](https://codeclimate.com/github/jalyna/oakdex-world-engine/maintainability) ![David](https://img.shields.io/david/jalyna/oakdex-world-engine.svg)
 
 ![Demo](docs/demo.gif)
 
