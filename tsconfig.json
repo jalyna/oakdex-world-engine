@@ -8,5 +8,11 @@
     "target": "es2017",
     "jsx": "react",
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./src/**/__tests__"
+  ]
 }

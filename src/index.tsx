@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import { MapData, Walkability } from './MapData'
 import { Char, CharState, getInitialCharState } from './CharData'
 import draw from './draw'
 import timeout from './timeout'
@@ -9,7 +8,28 @@ import getDir, { getOppositeDir } from './getDir'
 import calculateViewport from './calculateViewport'
 import isNextFieldWalkable from './isNextFieldWalkable'
 
-export { MapData, CharState, Walkability }
+export { CharState }
+
+export interface Walkability {
+  top: number,
+  left: number,
+  right: number,
+  bottom: number
+}
+
+export interface MapData {
+  title: string,
+  width: number,
+  height: number,
+  mapBackgroundImage: string, // base64
+  mapForegroundImage: string, // base64
+  walkability: Walkability[][],
+  specialTiles: (string | null)[][],
+  credits?:  {
+    title: string,
+    url?: string
+  }[]
+}
 
 export interface Coordinates {
   x: number,

@@ -1,15 +1,277 @@
-!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}};return e[n].call(o.exports,o,o.exports,r),o.l=!0,o.exports}r.m=e,r.c=t,r.d=function(e,t,n){r.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:n})},r.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},r.t=function(e,t){if(1&t&&(e=r(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var n=Object.create(null);if(r.r(n),Object.defineProperty(n,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)r.d(n,o,function(t){return e[t]}.bind(null,o));return n},r.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return r.d(t,"a",t),t},r.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},r.p="",r(r.s=0)}([function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(1),o=r(5),i=r(6),a=r(8),s=r(2),l=r(9),c=r(10),u=r(11);!function(e){e[e.Up=1]="Up",e[e.Down=2]="Down",e[e.Left=3]="Left",e[e.Right=4]="Right"}(t.Direction||(t.Direction={})),t.TILE_SIZE=16,t.FRAMES_PER_STEP=3,t.FRAME_DURATION=90;t.default=class extends n.Component{constructor(e){super(e),this.canvas=n.createRef(),this.state={chars:[o.getInitialCharState(e.controllableChar)].concat(e.chars.map(e=>o.getInitialCharState(e))),pressedKey:null,otherPressedKeys:[]},this.onKeyDown=this.onKeyDown.bind(this),this.onKeyUp=this.onKeyUp.bind(this),this.tick=this.tick.bind(this),this.moveChar=this.moveChar.bind(this),this.changeCharDir=this.changeCharDir.bind(this)}render(){const{top:e,left:r}=c.default(this.props.viewport,this.props.mapData,this.controllableChar);return n.createElement("div",{style:{overflow:"hidden",width:this.props.viewport.width*t.TILE_SIZE,height:this.props.viewport.height*t.TILE_SIZE,position:"relative"}},n.createElement("div",{style:{position:"absolute",left:r,top:e}},n.createElement("div",{style:{position:"relative",imageRendering:"pixelated",width:this.props.mapData.width*t.TILE_SIZE,height:this.props.mapData.height*t.TILE_SIZE,backgroundImage:"url("+this.props.mapData.mapBackgroundImage+")"}},n.createElement("canvas",{ref:this.canvas,width:this.props.mapData.width*t.TILE_SIZE,height:this.props.mapData.height*t.TILE_SIZE,style:{imageRendering:"pixelated",position:"absolute"}}))))}pressEnter(){const e=this.state.chars.find(e=>e.id!==this.controllableChar.id&&e.x===this.controllableChar.x&&e.y===this.controllableChar.y);e&&this.props.onPressEnter&&this.props.onPressEnter(this.controllableChar.id,Object.assign({},e));const t=s.default(this.state.chars),r=this.state.chars.find(e=>e.x===t.x&&e.y===t.y&&!e.walkThrough);r&&(r.lookNotInDirection||this.changeChar(r.id,{dir:l.getOppositeDir(this.controllableChar.dir)}),this.props.onPressEnter&&this.props.onPressEnter(this.controllableChar.id,Object.assign({},r)))}onKeyDown(e){if("Enter"===e.key||" "===e.key)return void this.pressEnter();const r=l.default(e);r&&(this.setState({pressedKey:r,otherPressedKeys:this.state.otherPressedKeys.slice().concat(this.state.pressedKey?[this.state.pressedKey]:null)}),this.interval||(this.tick(),this.interval=window.setInterval(this.tick,t.FRAME_DURATION)))}onKeyUp(e){let t=l.default(e);if(!t)return;let r=this.state.otherPressedKeys.slice().filter(e=>e!==t);const n=r[r.length-1];r=r.filter(e=>e!==n),this.setState({pressedKey:n||null,otherPressedKeys:r})}changeCharDir(e,r){return new Promise(n=>{this.changeChar(e,{dir:r}),setTimeout(n,t.FRAME_DURATION)})}moveChar(e,r,n){return n=n||{},new Promise(async o=>{const i=this.state.chars.find(t=>t.id===e);if(i)if(i.dir!==r&&await this.changeCharDir(e,r),u.default(this.props.mapData,this.state.chars,e)){for(let r=1;r<t.FRAMES_PER_STEP;r++)this.changeChar(e,{progressFrame:r,animationFrame:r}),await a.default(n.msPerFrame||t.FRAME_DURATION);this.finishStep(i.id),await a.default(n.msPerFrame||t.FRAME_DURATION),o(!0)}else o(!1);else o(!1)})}componentDidMount(){this.redraw(),document.addEventListener("keydown",this.onKeyDown),document.addEventListener("keyup",this.onKeyUp),this.interval=window.setInterval(this.tick,t.FRAME_DURATION),this.actionHandler={moveChar:this.moveChar,changeCharDir:this.changeCharDir,disableMovement:()=>this.setState({disabledMovement:!0}),enableMovement:()=>this.setState({disabledMovement:!1})},this.props.onLoaded&&this.props.onLoaded(this.actionHandler)}componentWillUnmount(){clearInterval(this.interval),this.interval=null,document.removeEventListener("keydown",this.onKeyDown),document.removeEventListener("keyup",this.onKeyUp)}componentDidUpdate(){this.redraw()}nextCharProgress(){this.controllableChar.progressFrame!==t.FRAMES_PER_STEP-1?this.changeControllableChar({progressFrame:this.controllableChar.progressFrame+1,animationFrame:this.controllableChar.animationFrame+1}):this.finishStep()}nextCharAnimation(){this.controllableChar.animationFrame!==t.FRAMES_PER_STEP-1?this.changeControllableChar({animationFrame:this.controllableChar.animationFrame+1}):this.changeControllableChar({animationFrame:0})}get controllableChar(){return this.state.chars[0]}changeControllableChar(e){this.setState({chars:[Object.assign({},this.controllableChar,e)].concat(this.state.chars.slice(1,this.state.chars.length))})}changeChar(e,t){const r=this.state.chars.slice().map(r=>r.id===e?Object.assign({},r,t):r);this.setState({chars:r})}clearAnimation(){clearInterval(this.interval),this.interval=null}triggerOnWalksTo(e,t){if(this.props.onOver){const t=this.state.chars.find(e=>e.id!==this.controllableChar.id&&e.x===this.controllableChar.x&&e.y===this.controllableChar.y);t&&this.props.onOver(e,Object.assign({},t))}this.props.onWalksTo&&this.props.onWalksTo(e,{prev:Object.assign({},t,{special:this.props.mapData.specialTiles[t.y][t.x]||null}),next:{looksAt:s.default(this.state.chars),x:this.controllableChar.x,y:this.controllableChar.y,special:this.props.mapData.specialTiles[this.controllableChar.y][this.controllableChar.x]||null}})}finishStep(e){let t=this.controllableChar;e&&(t=this.state.chars.find(t=>t.id===e));const{x:r,y:n}=s.default(this.state.chars,t.id),o=t.x,i=t.y;this.changeChar(t.id,{x:r,y:n,progressFrame:0,animationFrame:0}),this.triggerOnWalksTo(t.id,{x:o,y:i})}tick(){if(0===this.controllableChar.progressFrame)if(0===this.controllableChar.animationFrame)if(this.state.pressedKey){if(!this.state.disabledMovement)return this.controllableChar.dir!==this.state.pressedKey?(this.changeControllableChar({dir:this.state.pressedKey}),void this.triggerOnWalksTo(this.controllableChar.id,{x:this.controllableChar.x,y:this.controllableChar.y})):void(u.default(this.props.mapData,this.state.chars,this.controllableChar.id)?this.changeControllableChar({progressFrame:1,animationFrame:1}):this.changeControllableChar({animationFrame:1}))}else this.clearAnimation();else this.nextCharAnimation();else this.nextCharProgress()}redraw(){this.canvas.current&&i.default(this.canvas.current,this.props.mapData,this.state.chars)}}},function(e,t,r){"use strict";e.exports=r(4)},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0);t.default=function(e,t){let r=e[0];t&&(r=e.find(e=>e.id===t));let o=r.x,i=r.y;switch(r.dir){case n.Direction.Left:o-=1;break;case n.Direction.Right:o+=1;break;case n.Direction.Down:i+=1;break;case n.Direction.Up:i-=1}return{x:o,y:i}}},function(e,t,r){"use strict";
-/*
-object-assign
-(c) Sindre Sorhus
-@license MIT
-*/var n=Object.getOwnPropertySymbols,o=Object.prototype.hasOwnProperty,i=Object.prototype.propertyIsEnumerable;e.exports=function(){try{if(!Object.assign)return!1;var e=new String("abc");if(e[5]="de","5"===Object.getOwnPropertyNames(e)[0])return!1;for(var t={},r=0;r<10;r++)t["_"+String.fromCharCode(r)]=r;if("0123456789"!==Object.getOwnPropertyNames(t).map(function(e){return t[e]}).join(""))return!1;var n={};return"abcdefghijklmnopqrst".split("").forEach(function(e){n[e]=e}),"abcdefghijklmnopqrst"===Object.keys(Object.assign({},n)).join("")}catch(e){return!1}}()?Object.assign:function(e,t){for(var r,a,s=function(e){if(null==e)throw new TypeError("Object.assign cannot be called with null or undefined");return Object(e)}(e),l=1;l<arguments.length;l++){for(var c in r=Object(arguments[l]))o.call(r,c)&&(s[c]=r[c]);if(n){a=n(r);for(var u=0;u<a.length;u++)i.call(r,a[u])&&(s[a[u]]=r[a[u]])}}return s}},function(e,t,r){"use strict";
-/** @license React v16.8.4
- * react.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */var n=r(3),o="function"==typeof Symbol&&Symbol.for,i=o?Symbol.for("react.element"):60103,a=o?Symbol.for("react.portal"):60106,s=o?Symbol.for("react.fragment"):60107,l=o?Symbol.for("react.strict_mode"):60108,c=o?Symbol.for("react.profiler"):60114,u=o?Symbol.for("react.provider"):60109,h=o?Symbol.for("react.context"):60110,f=o?Symbol.for("react.concurrent_mode"):60111,p=o?Symbol.for("react.forward_ref"):60112,d=o?Symbol.for("react.suspense"):60113,y=o?Symbol.for("react.memo"):60115,m=o?Symbol.for("react.lazy"):60116,g="function"==typeof Symbol&&Symbol.iterator;function b(e){for(var t=arguments.length-1,r="https://reactjs.org/docs/error-decoder.html?invariant="+e,n=0;n<t;n++)r+="&args[]="+encodeURIComponent(arguments[n+1]);!function(e,t,r,n,o,i,a,s){if(!e){if(e=void 0,void 0===t)e=Error("Minified exception occurred; use the non-minified dev environment for the full error message and additional helpful warnings.");else{var l=[r,n,o,i,a,s],c=0;(e=Error(t.replace(/%s/g,function(){return l[c++]}))).name="Invariant Violation"}throw e.framesToPop=1,e}}(!1,"Minified React error #"+e+"; visit %s for the full message or use the non-minified dev environment for full errors and additional helpful warnings. ",r)}var E={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}},v={};function _(e,t,r){this.props=e,this.context=t,this.refs=v,this.updater=r||E}function S(){}function w(e,t,r){this.props=e,this.context=t,this.refs=v,this.updater=r||E}_.prototype.isReactComponent={},_.prototype.setState=function(e,t){"object"!=typeof e&&"function"!=typeof e&&null!=e&&b("85"),this.updater.enqueueSetState(this,e,t,"setState")},_.prototype.forceUpdate=function(e){this.updater.enqueueForceUpdate(this,e,"forceUpdate")},S.prototype=_.prototype;var C=w.prototype=new S;C.constructor=w,n(C,_.prototype),C.isPureReactComponent=!0;var D={current:null},P={current:null},I=Object.prototype.hasOwnProperty,R={key:!0,ref:!0,__self:!0,__source:!0};function T(e,t,r){var n=void 0,o={},a=null,s=null;if(null!=t)for(n in void 0!==t.ref&&(s=t.ref),void 0!==t.key&&(a=""+t.key),t)I.call(t,n)&&!R.hasOwnProperty(n)&&(o[n]=t[n]);var l=arguments.length-2;if(1===l)o.children=r;else if(1<l){for(var c=Array(l),u=0;u<l;u++)c[u]=arguments[u+2];o.children=c}if(e&&e.defaultProps)for(n in l=e.defaultProps)void 0===o[n]&&(o[n]=l[n]);return{$$typeof:i,type:e,key:a,ref:s,props:o,_owner:P.current}}function k(e){return"object"==typeof e&&null!==e&&e.$$typeof===i}var O=/\/+/g,x=[];function F(e,t,r,n){if(x.length){var o=x.pop();return o.result=e,o.keyPrefix=t,o.func=r,o.context=n,o.count=0,o}return{result:e,keyPrefix:t,func:r,context:n,count:0}}function M(e){e.result=null,e.keyPrefix=null,e.func=null,e.context=null,e.count=0,10>x.length&&x.push(e)}function j(e,t,r){return null==e?0:function e(t,r,n,o){var s=typeof t;"undefined"!==s&&"boolean"!==s||(t=null);var l=!1;if(null===t)l=!0;else switch(s){case"string":case"number":l=!0;break;case"object":switch(t.$$typeof){case i:case a:l=!0}}if(l)return n(o,t,""===r?"."+L(t,0):r),1;if(l=0,r=""===r?".":r+":",Array.isArray(t))for(var c=0;c<t.length;c++){var u=r+L(s=t[c],c);l+=e(s,u,n,o)}else if(u=null===t||"object"!=typeof t?null:"function"==typeof(u=g&&t[g]||t["@@iterator"])?u:null,"function"==typeof u)for(t=u.call(t),c=0;!(s=t.next()).done;)l+=e(s=s.value,u=r+L(s,c++),n,o);else"object"===s&&b("31","[object Object]"==(n=""+t)?"object with keys {"+Object.keys(t).join(", ")+"}":n,"");return l}(e,"",t,r)}function L(e,t){return"object"==typeof e&&null!==e&&null!=e.key?function(e){var t={"=":"=0",":":"=2"};return"$"+(""+e).replace(/[=:]/g,function(e){return t[e]})}(e.key):t.toString(36)}function A(e,t){e.func.call(e.context,t,e.count++)}function U(e,t,r){var n=e.result,o=e.keyPrefix;e=e.func.call(e.context,t,e.count++),Array.isArray(e)?Z(e,n,r,function(e){return e}):null!=e&&(k(e)&&(e=function(e,t){return{$$typeof:i,type:e.type,key:t,ref:e.ref,props:e.props,_owner:e._owner}}(e,o+(!e.key||t&&t.key===e.key?"":(""+e.key).replace(O,"$&/")+"/")+r)),n.push(e))}function Z(e,t,r,n,o){var i="";null!=r&&(i=(""+r).replace(O,"$&/")+"/"),j(e,U,t=F(t,i,n,o)),M(t)}function K(){var e=D.current;return null===e&&b("307"),e}var $={Children:{map:function(e,t,r){if(null==e)return e;var n=[];return Z(e,n,null,t,r),n},forEach:function(e,t,r){if(null==e)return e;j(e,A,t=F(null,null,t,r)),M(t)},count:function(e){return j(e,function(){return null},null)},toArray:function(e){var t=[];return Z(e,t,null,function(e){return e}),t},only:function(e){return k(e)||b("143"),e}},createRef:function(){return{current:null}},Component:_,PureComponent:w,createContext:function(e,t){return void 0===t&&(t=null),(e={$$typeof:h,_calculateChangedBits:t,_currentValue:e,_currentValue2:e,_threadCount:0,Provider:null,Consumer:null}).Provider={$$typeof:u,_context:e},e.Consumer=e},forwardRef:function(e){return{$$typeof:p,render:e}},lazy:function(e){return{$$typeof:m,_ctor:e,_status:-1,_result:null}},memo:function(e,t){return{$$typeof:y,type:e,compare:void 0===t?null:t}},useCallback:function(e,t){return K().useCallback(e,t)},useContext:function(e,t){return K().useContext(e,t)},useEffect:function(e,t){return K().useEffect(e,t)},useImperativeHandle:function(e,t,r){return K().useImperativeHandle(e,t,r)},useDebugValue:function(){},useLayoutEffect:function(e,t){return K().useLayoutEffect(e,t)},useMemo:function(e,t){return K().useMemo(e,t)},useReducer:function(e,t,r){return K().useReducer(e,t,r)},useRef:function(e){return K().useRef(e)},useState:function(e){return K().useState(e)},Fragment:s,StrictMode:l,Suspense:d,createElement:T,cloneElement:function(e,t,r){null==e&&b("267",e);var o=void 0,a=n({},e.props),s=e.key,l=e.ref,c=e._owner;if(null!=t){void 0!==t.ref&&(l=t.ref,c=P.current),void 0!==t.key&&(s=""+t.key);var u=void 0;for(o in e.type&&e.type.defaultProps&&(u=e.type.defaultProps),t)I.call(t,o)&&!R.hasOwnProperty(o)&&(a[o]=void 0===t[o]&&void 0!==u?u[o]:t[o])}if(1===(o=arguments.length-2))a.children=r;else if(1<o){u=Array(o);for(var h=0;h<o;h++)u[h]=arguments[h+2];a.children=u}return{$$typeof:i,type:e.type,key:s,ref:l,props:a,_owner:c}},createFactory:function(e){var t=T.bind(null,e);return t.type=e,t},isValidElement:k,version:"16.8.4",unstable_ConcurrentMode:f,unstable_Profiler:c,__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED:{ReactCurrentDispatcher:D,ReactCurrentOwner:P,assign:n}},N={default:$},q=N&&$||N;e.exports=q.default||q},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0);t.getInitialCharState=function(e){return Object.assign({},e,{dir:e.dir||n.Direction.Down,animationFrame:0,progressFrame:0})}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(7);let o={},i=null;function a(e,t){return new Promise(r=>{if(o[e])return void r();const n=new Image;n.src=t,o[e]=n,n.onload=(()=>r())})}t.default=function(e,t,r){const s=e.getContext("2d");(function(e,t){return i!==e.title&&(o={},i=e.title),Promise.all([a("foreground",e.mapForegroundImage)].concat(t.map(e=>a("char-"+e.id,e.image))))})(t,r).then(()=>{s.clearRect(0,0,e.width,e.height),r.slice().sort((e,t)=>e.walkThrough===t.walkThrough?e.y<=t.y?-1:1:e.walkThrough?-1:1).forEach(e=>{n.default(s,o["char-"+e.id],e)}),s.drawImage(o.foreground,0,0,e.width,e.height,0,0,e.width,e.height)})}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0),o=32;t.default=function(e,t,r){const{top:i,left:a}=function(e,t){let r=0*o,i=1*o;switch(e){case n.Direction.Left:r=1*o;break;case n.Direction.Right:r=2*o;break;case n.Direction.Up:r=3*o}return 0!==t&&(i=t%2==0?0*o:2*o),{top:r,left:i}}(r.dir||n.Direction.Down,r.animationFrame);let s=r.x*n.TILE_SIZE,l=r.y*n.TILE_SIZE;if(r.progressFrame<n.FRAMES_PER_STEP)switch(r.dir){case n.Direction.Left:s-=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Right:s+=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Down:l+=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Up:l-=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE)}e.drawImage(t,a,i,o,o,s-8,l-16,o,o),r.name&&(e.font="normal 8px Verdana",e.textAlign="center",e.fillStyle="rgba(0, 0, 0, 0.7)",e.fillText(r.name,s+8,l+24,100))}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0}),t.default=function(e){return new Promise(t=>setTimeout(t,e))}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0);t.getOppositeDir=function(e){switch(e){case n.Direction.Left:return n.Direction.Right;case n.Direction.Right:return n.Direction.Left;case n.Direction.Down:return n.Direction.Up;case n.Direction.Up:return n.Direction.Down}},t.default=function(e){switch(e.key){case"ArrowUp":case"w":return n.Direction.Up;case"ArrowDown":case"s":return n.Direction.Down;case"ArrowLeft":case"a":return n.Direction.Left;case"ArrowRight":case"d":return n.Direction.Right}return null}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0);function o(e,t,r){return e<t?t:e>r?r:e}t.default=function(e,t,r){let i=r.y*n.TILE_SIZE,a=r.x*n.TILE_SIZE;if(r.progressFrame<n.FRAMES_PER_STEP)switch(r.dir){case n.Direction.Left:a-=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Right:a+=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Down:i+=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE);break;case n.Direction.Up:i-=Math.floor(r.progressFrame/n.FRAMES_PER_STEP*n.TILE_SIZE)}return{top:o(-i+e.height*n.TILE_SIZE/2,-t.height*n.TILE_SIZE+e.height*n.TILE_SIZE,0),left:o(-a+e.width*n.TILE_SIZE/2,-t.width*n.TILE_SIZE+e.width*n.TILE_SIZE,0)}}},function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:!0});const n=r(0),o=r(2);t.default=function(e,t,r){const{x:i,y:a}=o.default(t,r),s=function(e,t,r,n){return t.some(e=>e.x===r&&e.y===n&&!e.walkThrough)?{top:1,left:1,right:1,bottom:1}:e.walkability[n][r]}(e,t,i,a);switch(t.find(e=>e.id===r).dir){case n.Direction.Left:return 0===s.right;case n.Direction.Right:return 0===s.left;case n.Direction.Down:return 0===s.top;case n.Direction.Up:return 0===s.bottom}return!1}}]);
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const React = require("react");
+const CharData_1 = require("./CharData");
+const draw_1 = require("./draw");
+const timeout_1 = require("./timeout");
+const getNextCoordinates_1 = require("./getNextCoordinates");
+const getDir_1 = require("./getDir");
+const calculateViewport_1 = require("./calculateViewport");
+const isNextFieldWalkable_1 = require("./isNextFieldWalkable");
+var Direction;
+(function (Direction) {
+    Direction[Direction["Up"] = 1] = "Up";
+    Direction[Direction["Down"] = 2] = "Down";
+    Direction[Direction["Left"] = 3] = "Left";
+    Direction[Direction["Right"] = 4] = "Right";
+})(Direction = exports.Direction || (exports.Direction = {}));
+exports.TILE_SIZE = 16;
+exports.FRAMES_PER_STEP = 3;
+exports.FRAME_DURATION = 90;
+class WorldEngine extends React.Component {
+    constructor(props) {
+        super(props);
+        this.canvas = React.createRef();
+        this.state = {
+            chars: [CharData_1.getInitialCharState(props.controllableChar)].concat(props.chars.map((c) => CharData_1.getInitialCharState(c))),
+            pressedKey: null,
+            otherPressedKeys: []
+        };
+        this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
+        this.tick = this.tick.bind(this);
+        this.moveChar = this.moveChar.bind(this);
+        this.changeCharDir = this.changeCharDir.bind(this);
+    }
+    render() {
+        const { top, left } = calculateViewport_1.default(this.props.viewport, this.props.mapData, this.controllableChar);
+        return (React.createElement("div", { style: {
+                overflow: 'hidden',
+                width: this.props.viewport.width * exports.TILE_SIZE,
+                height: this.props.viewport.height * exports.TILE_SIZE,
+                position: 'relative'
+            } },
+            React.createElement("div", { style: {
+                    position: 'absolute',
+                    left: left,
+                    top: top
+                } },
+                React.createElement("div", { style: {
+                        position: 'relative',
+                        imageRendering: 'pixelated',
+                        width: this.props.mapData.width * exports.TILE_SIZE,
+                        height: this.props.mapData.height * exports.TILE_SIZE,
+                        backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
+                    } },
+                    React.createElement("canvas", { ref: this.canvas, width: this.props.mapData.width * exports.TILE_SIZE, height: this.props.mapData.height * exports.TILE_SIZE, style: { imageRendering: 'pixelated', position: 'absolute' } })))));
+    }
+    pressEnter() {
+        const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
+        if (hoverChar && this.props.onPressEnter) {
+            this.props.onPressEnter(this.controllableChar.id, Object.assign({}, hoverChar));
+        }
+        const nextCoordinates = getNextCoordinates_1.default(this.state.chars);
+        const nextChar = this.state.chars.find((c) => c.x === nextCoordinates.x && c.y === nextCoordinates.y && !c.walkThrough);
+        if (nextChar) {
+            if (!nextChar.lookNotInDirection) {
+                this.changeChar(nextChar.id, { dir: getDir_1.getOppositeDir(this.controllableChar.dir) });
+            }
+            if (this.props.onPressEnter) {
+                this.props.onPressEnter(this.controllableChar.id, Object.assign({}, nextChar));
+            }
+        }
+    }
+    onKeyDown(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            this.pressEnter();
+            return;
+        }
+        const dir = getDir_1.default(e);
+        if (!dir) {
+            return;
+        }
+        this.setState({
+            pressedKey: dir,
+            otherPressedKeys: this.state.otherPressedKeys.slice()
+                .concat(this.state.pressedKey ? [this.state.pressedKey] : null)
+        });
+        if (!this.interval) {
+            this.tick();
+            this.interval = window.setInterval(this.tick, exports.FRAME_DURATION);
+        }
+    }
+    onKeyUp(e) {
+        let dir = getDir_1.default(e);
+        if (!dir) {
+            return;
+        }
+        let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir);
+        const lastKey = otherPressedKeys[otherPressedKeys.length - 1];
+        otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey);
+        this.setState({
+            pressedKey: lastKey || null,
+            otherPressedKeys
+        });
+    }
+    changeCharDir(charId, dir) {
+        return new Promise((resolve) => {
+            this.changeChar(charId, { dir });
+            setTimeout(resolve, exports.FRAME_DURATION);
+        });
+    }
+    moveChar(charId, dir, options) {
+        options = options || {};
+        return new Promise(async (resolve) => {
+            const char = this.state.chars.find((c) => c.id === charId);
+            if (!char) {
+                resolve(false);
+                return;
+            }
+            if (char.dir !== dir) {
+                await this.changeCharDir(charId, dir);
+            }
+            if (!isNextFieldWalkable_1.default(this.props.mapData, this.state.chars, charId)) {
+                resolve(false);
+                return;
+            }
+            for (let i = 1; i < exports.FRAMES_PER_STEP; i++) {
+                this.changeChar(charId, { progressFrame: i, animationFrame: i });
+                await timeout_1.default(options.msPerFrame || exports.FRAME_DURATION);
+            }
+            this.finishStep(char.id);
+            await timeout_1.default(options.msPerFrame || exports.FRAME_DURATION);
+            resolve(true);
+        });
+    }
+    componentDidMount() {
+        this.redraw();
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+        this.interval = window.setInterval(this.tick, exports.FRAME_DURATION);
+        this.actionHandler = {
+            moveChar: this.moveChar,
+            changeCharDir: this.changeCharDir,
+            disableMovement: () => this.setState({ disabledMovement: true }),
+            enableMovement: () => this.setState({ disabledMovement: false })
+        };
+        if (this.props.onLoaded) {
+            this.props.onLoaded(this.actionHandler);
+        }
+    }
+    componentWillUnmount() {
+        clearInterval(this.interval);
+        this.interval = null;
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
+    }
+    componentDidUpdate() {
+        this.redraw();
+    }
+    nextCharProgress() {
+        if (this.controllableChar.progressFrame === exports.FRAMES_PER_STEP - 1) {
+            this.finishStep();
+            return;
+        }
+        this.changeControllableChar({
+            progressFrame: this.controllableChar.progressFrame + 1,
+            animationFrame: this.controllableChar.animationFrame + 1
+        });
+    }
+    nextCharAnimation() {
+        if (this.controllableChar.animationFrame === exports.FRAMES_PER_STEP - 1) {
+            this.changeControllableChar({ animationFrame: 0 });
+            return;
+        }
+        this.changeControllableChar({
+            animationFrame: this.controllableChar.animationFrame + 1
+        });
+    }
+    get controllableChar() {
+        return this.state.chars[0];
+    }
+    changeControllableChar(newFields) {
+        this.setState({
+            chars: [Object.assign({}, this.controllableChar, newFields)].concat(this.state.chars.slice(1, this.state.chars.length))
+        });
+    }
+    changeChar(charId, newFields) {
+        const chars = this.state.chars.slice().map((c) => {
+            if (c.id === charId) {
+                return Object.assign({}, c, newFields);
+            }
+            return c;
+        });
+        this.setState({ chars });
+    }
+    clearAnimation() {
+        clearInterval(this.interval);
+        this.interval = null;
+    }
+    triggerOnWalksTo(charId, oldCoordinates) {
+        if (this.props.onOver) {
+            const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
+            if (overChar) {
+                this.props.onOver(charId, Object.assign({}, overChar));
+            }
+        }
+        if (!this.props.onWalksTo) {
+            return;
+        }
+        this.props.onWalksTo(charId, {
+            prev: Object.assign({}, oldCoordinates, { special: this.props.mapData.specialTiles[oldCoordinates.y][oldCoordinates.x] || null }),
+            next: {
+                looksAt: getNextCoordinates_1.default(this.state.chars),
+                x: this.controllableChar.x,
+                y: this.controllableChar.y,
+                special: this.props.mapData.specialTiles[this.controllableChar.y][this.controllableChar.x] || null
+            }
+        });
+    }
+    finishStep(charId) {
+        let char = this.controllableChar;
+        if (charId) {
+            char = this.state.chars.find((c) => c.id === charId);
+        }
+        const { x, y } = getNextCoordinates_1.default(this.state.chars, char.id);
+        const prevX = char.x;
+        const prevY = char.y;
+        this.changeChar(char.id, { x, y, progressFrame: 0, animationFrame: 0 });
+        this.triggerOnWalksTo(char.id, { x: prevX, y: prevY });
+    }
+    tick() {
+        // in-between, animate
+        if (this.controllableChar.progressFrame !== 0) {
+            this.nextCharProgress();
+            return;
+        }
+        if (this.controllableChar.animationFrame !== 0) {
+            this.nextCharAnimation();
+            return;
+        }
+        // Final Step => clear interval
+        if (!this.state.pressedKey) {
+            this.clearAnimation();
+            return;
+        }
+        // Forbid Movement
+        if (this.state.disabledMovement) {
+            return;
+        }
+        // First press => change dir only
+        if (this.controllableChar.dir !== this.state.pressedKey) {
+            this.changeControllableChar({ dir: this.state.pressedKey });
+            this.triggerOnWalksTo(this.controllableChar.id, { x: this.controllableChar.x, y: this.controllableChar.y });
+            return;
+        }
+        // Can not walk to next field
+        if (!isNextFieldWalkable_1.default(this.props.mapData, this.state.chars, this.controllableChar.id)) {
+            this.changeControllableChar({
+                animationFrame: 1
+            });
+            return;
+        }
+        // Second press => start to walk
+        this.changeControllableChar({
+            progressFrame: 1,
+            animationFrame: 1
+        });
+    }
+    redraw() {
+        if (!this.canvas.current) {
+            return;
+        }
+        draw_1.default(this.canvas.current, this.props.mapData, this.state.chars);
+    }
+}
+exports.default = WorldEngine;
 //# sourceMappingURL=index.js.map
