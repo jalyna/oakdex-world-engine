@@ -35,7 +35,9 @@ function default_1(canvas, mapData, charStates) {
             return a.walkThrough ? -1 : 1;
         });
         sortedCharStates.forEach((charState) => {
-            drawChar_1.default(ctx, loadedImages['char-' + charState.id], charState);
+            if (!charState.hidden) {
+                drawChar_1.default(ctx, loadedImages['char-' + charState.id], charState);
+            }
         });
         ctx.drawImage(loadedImages.foreground, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
     });

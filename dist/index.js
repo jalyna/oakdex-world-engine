@@ -4,6 +4,8 @@ const React = require("react");
 const CharData_1 = require("./CharData");
 const draw_1 = require("./draw");
 const timeout_1 = require("./timeout");
+exports.timeout = timeout_1.default;
+const findPath_1 = require("./findPath");
 const getNextCoordinates_1 = require("./getNextCoordinates");
 const getDir_1 = require("./getDir");
 const calculateViewport_1 = require("./calculateViewport");
@@ -32,6 +34,7 @@ class WorldEngine extends React.Component {
         this.onKeyUp = this.onKeyUp.bind(this);
         this.tick = this.tick.bind(this);
         this.moveChar = this.moveChar.bind(this);
+        this.moveCharTo = this.moveCharTo.bind(this);
         this.changeCharDir = this.changeCharDir.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
@@ -90,7 +93,6 @@ class WorldEngine extends React.Component {
         }
     }
     stopPressDir(dir) {
-        console.log('STOP', dir);
         let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir);
         const lastKey = otherPressedKeys[otherPressedKeys.length - 1];
         otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey);
@@ -100,7 +102,6 @@ class WorldEngine extends React.Component {
         });
     }
     pressDir(dir) {
-        console.log('XXX', dir);
         this.setState({
             pressedKey: dir,
             otherPressedKeys: this.state.otherPressedKeys.slice()
@@ -131,6 +132,21 @@ class WorldEngine extends React.Component {
         return new Promise((resolve) => {
             this.changeChar(charId, { dir });
             setTimeout(resolve, exports.FRAME_DURATION);
+        });
+    }
+    moveCharTo(charId, x, y, options) {
+        options = options || {};
+        return new Promise(async (resolve) => {
+            const char = this.state.chars.find((c) => c.id === charId);
+            if (!char) {
+                resolve(false);
+                return;
+            }
+            const dirs = findPath_1.default(this.props.mapData, this.state.chars, charId, x, y);
+            for (let i = 0; i < dirs.length; i++) {
+                await this.moveChar(charId, dirs[i], options);
+            }
+            resolve(true);
         });
     }
     moveChar(charId, dir, options) {
@@ -164,9 +180,12 @@ class WorldEngine extends React.Component {
         this.interval = window.setInterval(this.tick, exports.FRAME_DURATION);
         this.actionHandler = {
             moveChar: this.moveChar,
+            moveCharTo: this.moveCharTo,
             changeCharDir: this.changeCharDir,
             disableMovement: () => this.setState({ disabledMovement: true }),
-            enableMovement: () => this.setState({ disabledMovement: false })
+            enableMovement: () => this.setState({ disabledMovement: false }),
+            hideChar: (charId) => this.changeChar(charId, { hidden: true }),
+            showChar: (charId) => this.changeChar(charId, { hidden: false })
         };
         if (this.props.onLoaded) {
             this.props.onLoaded(this.actionHandler);

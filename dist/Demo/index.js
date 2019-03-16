@@ -7,11 +7,8 @@ const charset1 = require("./charset1.png");
 const charset2 = require("./charset2.png");
 const charset3 = require("./charset3.png");
 const charset4 = require("./charset4.png");
-const mapData = require('./demo.gamemap.json');
+const mapData = require('./demo.gamemap.json'); // created through http://world-editor.oakdex.org
 let actionHandler;
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 async function onEnterStranger() {
     console.log('TRIGGERED STRANGER');
     if (!actionHandler) {
@@ -19,11 +16,13 @@ async function onEnterStranger() {
     }
     actionHandler.disableMovement();
     await actionHandler.changeCharDir('stranger-woman', __1.Direction.Left);
-    await timeout(300);
+    await __1.timeout(300);
     await actionHandler.changeCharDir('stranger-woman', __1.Direction.Down);
-    await timeout(600);
+    actionHandler.hideChar('stranger-woman');
+    await __1.timeout(600);
     await actionHandler.changeCharDir('stranger-woman', __1.Direction.Right);
-    await timeout(600);
+    actionHandler.showChar('stranger-woman');
+    await __1.timeout(600);
     const up1 = await actionHandler.moveChar('stranger-woman', __1.Direction.Up, { msPerFrame: 100 });
     const up2 = await actionHandler.moveChar('stranger-woman', __1.Direction.Up);
     if (up1) {
@@ -32,6 +31,8 @@ async function onEnterStranger() {
     if (up2) {
         await actionHandler.moveChar('stranger-woman', __1.Direction.Down);
     }
+    await actionHandler.moveCharTo('stranger-woman', 43, 12);
+    await actionHandler.moveCharTo('stranger-woman', 32, 13);
     actionHandler.enableMovement();
     console.log('DONE');
 }

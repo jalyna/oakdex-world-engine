@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Char, CharState } from './CharData';
-export { CharState };
+import timeout from './timeout';
+export { CharState, timeout };
 export interface Walkability {
     top: number;
     left: number;
@@ -50,6 +51,9 @@ interface MoveCharOptions {
 export interface ActionHandler {
     moveChar: (charId: string, dir: Direction, options?: MoveCharOptions) => Promise<boolean>;
     changeCharDir: (charId: string, dir: Direction) => Promise<undefined>;
+    moveCharTo: (charId: string, x: number, y: number, options?: MoveCharOptions) => Promise<boolean>;
+    hideChar: (charId: string) => void;
+    showChar: (charId: string) => void;
     disableMovement: () => void;
     enableMovement: () => void;
 }
@@ -86,6 +90,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     onKeyDown(e: KeyboardEvent): void;
     onKeyUp(e: KeyboardEvent): void;
     changeCharDir(charId: string, dir: Direction): Promise<undefined>;
+    moveCharTo(charId: string, x: number, y: number, options?: MoveCharOptions): Promise<boolean>;
     moveChar(charId: string, dir: Direction, options?: MoveCharOptions): Promise<boolean>;
     componentDidMount(): void;
     componentWillUnmount(): void;

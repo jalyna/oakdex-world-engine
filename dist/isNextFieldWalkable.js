@@ -9,15 +9,15 @@ const BLOCKED = {
     bottom: 1
 };
 function getFieldData(mapData, chars, x, y) {
-    const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough);
+    const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough && !c.hidden);
     if (existingChar) {
         return BLOCKED;
     }
     return mapData.walkability[y][x] || BLOCKED;
 }
-function default_1(mapData, chars, charId) {
-    const { x, y } = getNextCoordinates_1.default(chars, charId);
-    const fieldData = getFieldData(mapData, chars, x, y);
+function isFieldWalkable(mapData, chars, charId, x, y) {
+    const otherChars = chars.filter((c) => c.id !== charId);
+    const fieldData = getFieldData(mapData, otherChars, x, y);
     const char = chars.find((c) => c.id === charId);
     switch (char.dir) {
         case _1.Direction.Left:
@@ -30,6 +30,11 @@ function default_1(mapData, chars, charId) {
             return fieldData.bottom === 0;
     }
     return false;
+}
+exports.isFieldWalkable = isFieldWalkable;
+function default_1(mapData, chars, charId) {
+    const { x, y } = getNextCoordinates_1.default(chars, charId);
+    return isFieldWalkable(mapData, chars, charId, x, y);
 }
 exports.default = default_1;
 //# sourceMappingURL=isNextFieldWalkable.js.map
