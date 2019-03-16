@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import WorldEngine, { Direction, ActionHandler } from '..'
+import WorldEngine, { Direction, ActionHandler, timeout } from '..'
 
 import * as charset1 from './charset1.png'
 import * as charset2 from './charset2.png'
@@ -11,10 +11,6 @@ import * as charset4 from './charset4.png'
 const mapData = require('./demo.gamemap.json') // created through http://world-editor.oakdex.org
 
 let actionHandler: ActionHandler
-
-function timeout (ms: number): Promise<undefined> {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 async function onEnterStranger () {
   console.log('TRIGGERED STRANGER')
@@ -38,6 +34,8 @@ async function onEnterStranger () {
   if (up2) {
     await actionHandler.moveChar('stranger-woman', Direction.Down)
   }
+  await actionHandler.moveCharTo('stranger-woman', 43, 12)
+  await actionHandler.moveCharTo('stranger-woman', 32, 13)
   actionHandler.enableMovement()
   console.log('DONE')
 }

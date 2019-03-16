@@ -90,4 +90,25 @@ describe('.isNextFieldWalkable', () => {
 
     expect(isNextFieldWalkable(mapData, chars, 'bar')).toBe(true)
   })
+
+  it('returns true if blocked by another char but it is hidden', () => {
+    const chars = [{
+      id: 'bar',
+      dir: Direction.Right,
+      x: 0,
+      y: 0
+    } as any,
+    {
+      x: 1,
+      y: 0,
+      hidden: true
+    } as any]
+    const mapData = {
+      walkability: [
+        [{ top: 0, left: 0, right: 0, bottom: 0 }, { top: 0, left: 0, right: 0, bottom: 0 }]
+      ]
+    } as any
+
+    expect(isNextFieldWalkable(mapData, chars, 'bar')).toBe(true)
+  })
 })

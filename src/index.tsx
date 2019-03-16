@@ -3,13 +3,14 @@ import * as React from 'react'
 import { Char, CharState, getInitialCharState } from './CharData'
 import draw from './draw'
 import timeout from './timeout'
+import findPath from './findPath'
 import getNextCoordinates from './getNextCoordinates'
 import getDir, { getOppositeDir } from './getDir'
 import calculateViewport from './calculateViewport'
 import isNextFieldWalkable from './isNextFieldWalkable'
 import TouchPad from './TouchPad'
 
-export { CharState }
+export { CharState, timeout }
 
 export interface Walkability {
   top: number,
@@ -69,6 +70,7 @@ interface MoveCharOptions {
 export interface ActionHandler {
   moveChar: (charId: string, dir: Direction, options?: MoveCharOptions) => Promise<boolean>,
   changeCharDir: (charId: string, dir: Direction) => Promise<undefined>,
+  moveCharTo: (charId: string, x: number, y: number, options?: MoveCharOptions) => Promise<boolean>,
   hideChar: (charId: string) => void,
   showChar: (charId: string) => void,
   disableMovement: () => void,
@@ -109,6 +111,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.onKeyUp = this.onKeyUp.bind(this)
     this.tick = this.tick.bind(this)
     this.moveChar = this.moveChar.bind(this)
+    this.moveCharTo = this.moveCharTo.bind(this)
     this.changeCharDir = this.changeCharDir.bind(this)
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
@@ -186,7 +189,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   stopPressDir (dir: Direction) {
-    console.log('STOP', dir)
     let otherPressedKeys = this.state.otherPressedKeys.slice().filter((d) => d !== dir)
     const lastKey = otherPressedKeys[otherPressedKeys.length - 1]
     otherPressedKeys = otherPressedKeys.filter((d) => d !== lastKey)
@@ -198,7 +200,6 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   pressDir (dir: Direction) {
-    console.log('XXX', dir)
     this.setState({
       pressedKey: dir,
       otherPressedKeys: this.state.otherPressedKeys.slice()
@@ -239,6 +240,25 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     })
   }
 
+  moveCharTo (charId: string, x: number, y: number, options?: MoveCharOptions): Promise<boolean> {
+    options = options || {}
+    return new Promise(async(resolve) => {
+      const char = this.state.chars.find((c) => c.id === charId)
+      if (!char) {
+        resolve(false)
+        return
+      }
+
+      const dirs = findPath(this.props.mapData, this.state.chars, charId, x, y)
+
+      for (let i = 0; i < dirs.length; i++) {
+        await this.moveChar(charId, dirs[i], options)
+      }
+
+      resolve(true)
+    })
+  }
+
   moveChar (charId: string, dir: Direction, options?: MoveCharOptions): Promise<boolean> {
     options = options || {}
     return new Promise(async(resolve) => {
@@ -273,6 +293,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     this.interval = window.setInterval(this.tick, FRAME_DURATION)
     this.actionHandler = {
       moveChar: this.moveChar,
+      moveCharTo: this.moveCharTo,
       changeCharDir: this.changeCharDir,
       disableMovement: () => this.setState({ disabledMovement: true }),
       enableMovement: () => this.setState({ disabledMovement: false }),

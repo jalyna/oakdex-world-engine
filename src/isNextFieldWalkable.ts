@@ -9,16 +9,16 @@ const BLOCKED = {
 }
 
 function getFieldData (mapData: MapData, chars: CharState[], x: number, y: number): Walkability {
-  const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough)
+  const existingChar = chars.some((c) => c.x === x && c.y === y && !c.walkThrough && !c.hidden)
   if (existingChar) {
     return BLOCKED
   }
   return mapData.walkability[y][x] || BLOCKED
 }
 
-export default function (mapData: MapData, chars: CharState[], charId: string): boolean {
-  const { x, y } = getNextCoordinates(chars, charId)
-  const fieldData = getFieldData(mapData, chars, x, y)
+export function isFieldWalkable (mapData: MapData, chars: CharState[], charId: string, x: number, y: number): boolean {
+  const otherChars = chars.filter((c) => c.id !== charId)
+  const fieldData = getFieldData(mapData, otherChars, x, y)
   const char = chars.find((c) => c.id === charId)
   switch (char.dir) {
     case Direction.Left:
@@ -31,4 +31,9 @@ export default function (mapData: MapData, chars: CharState[], charId: string): 
       return fieldData.bottom === 0
   }
   return false
+}
+
+export default function (mapData: MapData, chars: CharState[], charId: string): boolean {
+  const { x, y } = getNextCoordinates(chars, charId)
+  return isFieldWalkable(mapData, chars, charId, x, y)
 }
