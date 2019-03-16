@@ -44,7 +44,9 @@ export default function (canvas: HTMLCanvasElement, mapData: MapData, charStates
       return a.walkThrough ? -1 : 1
     })
     sortedCharStates.forEach((charState) => {
-      drawChar(ctx, loadedImages['char-' + charState.id], charState)
+      if (!charState.hidden) {
+        drawChar(ctx, loadedImages['char-' + charState.id], charState)
+      }
     })
     ctx.drawImage(
       loadedImages.foreground,

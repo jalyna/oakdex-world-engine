@@ -6,7 +6,8 @@ export interface Char extends Coordinates {
   name?: string,
   dir?: Direction,
   walkThrough?: boolean,
-  lookNotInDirection?: boolean
+  lookNotInDirection?: boolean,
+  hidden?: boolean
 }
 
 export interface CharState extends Char {

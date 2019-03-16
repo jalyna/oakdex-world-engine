@@ -69,6 +69,8 @@ interface MoveCharOptions {
 export interface ActionHandler {
   moveChar: (charId: string, dir: Direction, options?: MoveCharOptions) => Promise<boolean>,
   changeCharDir: (charId: string, dir: Direction) => Promise<undefined>,
+  hideChar: (charId: string) => void,
+  showChar: (charId: string) => void,
   disableMovement: () => void,
   enableMovement: () => void
 }
@@ -273,7 +275,9 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       moveChar: this.moveChar,
       changeCharDir: this.changeCharDir,
       disableMovement: () => this.setState({ disabledMovement: true }),
-      enableMovement: () => this.setState({ disabledMovement: false })
+      enableMovement: () => this.setState({ disabledMovement: false }),
+      hideChar: (charId: string) => this.changeChar(charId, { hidden: true }),
+      showChar: (charId: string) => this.changeChar(charId, { hidden: false })
     }
     if (this.props.onLoaded) {
       this.props.onLoaded(this.actionHandler)

@@ -27,7 +27,7 @@ import * as charset2 from './charset2.png'
 import * as charset3 from './charset3.png'
 import * as charset4 from './charset4.png'
 
-const mapData = require('./demo.gamemap.json') // created through http://world-editor.oakdex.org/
+const mapData = require('./demo.gamemap.json') // created through http://world-editor.oakdex.org
 
 let actionHandler: ActionHandler
 
@@ -44,8 +44,10 @@ async function onEnterStranger () {
   await actionHandler.changeCharDir('stranger-woman', Direction.Left)
   await timeout(300)
   await actionHandler.changeCharDir('stranger-woman', Direction.Down)
+  actionHandler.hideChar('stranger-woman')
   await timeout(600)
   await actionHandler.changeCharDir('stranger-woman', Direction.Right)
+  actionHandler.showChar('stranger-woman')
   await timeout(600)
   const up1 = await actionHandler.moveChar('stranger-woman', Direction.Up, { msPerFrame: 100 })
   const up2 = await actionHandler.moveChar('stranger-woman', Direction.Up)
@@ -76,6 +78,7 @@ ReactDOM.render(
     />,
   document.getElementById('app')
 )
+
 ```
 
 
