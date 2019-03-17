@@ -27,10 +27,11 @@ export interface MapData {
   mapForegroundImage: string, // base64
   walkability: Walkability[][],
   specialTiles: (string | null)[][],
-  credits?:  {
+  credits?: {
     title: string,
     url?: string
-  }[]
+  }[],
+  chars?: Char[]
 }
 
 export interface Coordinates {
@@ -103,7 +104,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   constructor (props: WorldEngineProps) {
     super(props)
     this.state = {
-      chars: [getInitialCharState(props.controllableChar)].concat(props.chars.map((c) => getInitialCharState(c))),
+      chars: [getInitialCharState(props.controllableChar)].concat((props.mapData.chars || []).concat(props.chars).map((c) => getInitialCharState(c))),
       pressedKey: null,
       otherPressedKeys: []
     }

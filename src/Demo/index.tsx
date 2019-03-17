@@ -8,7 +8,9 @@ import * as charset2 from './charset2.png'
 import * as charset3 from './charset3.png'
 import * as charset4 from './charset4.png'
 
-const mapData = require('./demo.gamemap.json') // created through http://world-editor.oakdex.org
+const mapData = require('./small_demo.gamemap.json') // created through http://world-editor.oakdex.org
+
+console.log(mapData)
 
 let actionHandler: ActionHandler
 
@@ -34,8 +36,8 @@ async function onEnterStranger () {
   if (up2) {
     await actionHandler.moveChar('stranger-woman', Direction.Down)
   }
-  await actionHandler.moveCharTo('stranger-woman', 43, 12)
-  await actionHandler.moveCharTo('stranger-woman', 32, 13)
+  await actionHandler.moveCharTo('stranger-woman', 7, 3)
+  await actionHandler.moveCharTo('stranger-woman', 9, 4)
   actionHandler.enableMovement()
   console.log('DONE')
 }
@@ -44,11 +46,11 @@ ReactDOM.render(
   <WorldEngine
     mapData={mapData}
     viewport={{ width: 19, height: 15 }}
-    controllableChar={{ id: 'heroine', name: 'Heroine', image: charset1, x: 36, y: 12 }}
+    controllableChar={{ id: 'heroine', name: 'Heroine', image: charset1, x: 7, y: 3 }}
     chars={[
-      { id: 'stranger-woman', name: 'Stranger', image: charset2, x: 32, y: 13, dir: Direction.Up }, // bottom is default
-      { id: 'guy', image: charset3, x: 44, y: 12, lookNotInDirection: true },
-      { id: 'umbrella-woman', image: charset4, x: 40, y: 20, dir: Direction.Left, walkThrough: true }
+      { id: 'stranger-woman', name: 'Stranger', image: charset2, x: 9, y: 4, dir: Direction.Up }, // bottom is default
+      { id: 'guy', image: charset3, x: 10, y: 1, lookNotInDirection: true },
+      { id: 'umbrella-woman', image: charset4, x: 4, y: 1, dir: Direction.Left, walkThrough: true }
     ]}
     onLoaded={(mapActionHandler) => { actionHandler = mapActionHandler }}
     onPressEnter={(charId, triggeredChar) => triggeredChar.id === 'stranger-woman' ? onEnterStranger() : console.log('Pressing Enter For', triggeredChar.id)}
