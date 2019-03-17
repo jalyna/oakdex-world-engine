@@ -26,7 +26,7 @@ class WorldEngine extends React.Component {
         super(props);
         this.canvas = React.createRef();
         this.state = {
-            chars: [CharData_1.getInitialCharState(props.controllableChar)].concat(props.chars.map((c) => CharData_1.getInitialCharState(c))),
+            chars: [CharData_1.getInitialCharState(props.controllableChar)].concat((props.mapData.chars || []).concat(props.chars).map((c) => CharData_1.getInitialCharState(c))),
             pressedKey: null,
             otherPressedKeys: []
         };

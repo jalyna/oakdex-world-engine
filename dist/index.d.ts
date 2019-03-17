@@ -20,6 +20,7 @@ export interface MapData {
         title: string;
         url?: string;
     }[];
+    chars?: Char[];
 }
 export interface Coordinates {
     x: number;
