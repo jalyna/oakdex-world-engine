@@ -97,8 +97,8 @@ export interface WorldEngineState {
 }
 
 export const TILE_SIZE = 16
-export const FRAMES_PER_STEP = 3
-export const FRAME_DURATION = 90
+export const FRAMES_PER_STEP = 6
+export const FRAME_DURATION = 70
 
 export default class WorldEngine extends React.Component<WorldEngineProps, WorldEngineState> {
   constructor (props: WorldEngineProps) {

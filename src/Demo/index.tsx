@@ -7,6 +7,7 @@ import * as charset1 from './charset1.png'
 import * as charset2 from './charset2.png'
 import * as charset3 from './charset3.png'
 import * as charset4 from './charset4.png'
+import * as charset6 from './charset6.png'
 
 const mapData = require('./small_demo.gamemap.json') // created through http://world-editor.oakdex.org
 
@@ -46,9 +47,9 @@ ReactDOM.render(
   <WorldEngine
     mapData={mapData}
     viewport={{ width: 19, height: 15 }}
-    controllableChar={{ id: 'heroine', name: 'Heroine', image: charset1, x: 7, y: 3 }}
+    controllableChar={{ id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }}
     chars={[
-      { id: 'stranger-woman', name: 'Stranger', image: charset2, x: 9, y: 4, dir: Direction.Up }, // bottom is default
+      { id: 'stranger-woman', name: 'Stranger', image: charset6, x: 9, y: 4, dir: Direction.Up }, // bottom is default
       { id: 'guy', image: charset3, x: 10, y: 1, lookNotInDirection: true },
       { id: 'umbrella-woman', image: charset4, x: 4, y: 1, dir: Direction.Left, walkThrough: true }
     ]}
