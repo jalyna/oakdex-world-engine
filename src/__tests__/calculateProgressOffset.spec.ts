@@ -13,7 +13,7 @@ describe('.calculateProgressOffset', () => {
   it('changes x if left and in progress', () => {
     const char = {
       dir: Direction.Left,
-      progressFrame: 1
+      progressFrame: 2
     } as any
     expect(calculateProgressOffset(char)).toEqual({ x: -5, y: 0 })
   })
@@ -21,7 +21,7 @@ describe('.calculateProgressOffset', () => {
   it('changes x if right and in progress', () => {
     const char = {
       dir: Direction.Right,
-      progressFrame: 1
+      progressFrame: 2
     } as any
     expect(calculateProgressOffset(char)).toEqual({ x: 5, y: 0 })
   })
@@ -29,7 +29,7 @@ describe('.calculateProgressOffset', () => {
   it('changes y if up and in progress', () => {
     const char = {
       dir: Direction.Up,
-      progressFrame: 1
+      progressFrame: 2
     } as any
     expect(calculateProgressOffset(char)).toEqual({ x: 0, y: -5 })
   })
@@ -37,7 +37,7 @@ describe('.calculateProgressOffset', () => {
   it('changes y if down and in progress', () => {
     const char = {
       dir: Direction.Down,
-      progressFrame: 1
+      progressFrame: 2
     } as any
     expect(calculateProgressOffset(char)).toEqual({ x: 0, y: 5 })
   })

@@ -31,7 +31,7 @@ describe('.drawChar', () => {
       y: 4
     } as CharState
     drawChar(ctx, img, charState)
-    expect(ctx.drawImage).toHaveBeenCalledWith(img, 64, 96, 32, 32, 40, 43, 32, 32)
+    expect(ctx.drawImage).toHaveBeenCalledWith(img, 64, 96, 32, 32, 40, 46, 32, 32)
   })
 
   it('draws name', () => {
