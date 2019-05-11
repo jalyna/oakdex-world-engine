@@ -19,8 +19,8 @@ var Direction;
     Direction[Direction["Right"] = 4] = "Right";
 })(Direction = exports.Direction || (exports.Direction = {}));
 exports.TILE_SIZE = 16;
-exports.FRAMES_PER_STEP = 3;
-exports.FRAME_DURATION = 90;
+exports.FRAMES_PER_STEP = 6;
+exports.FRAME_DURATION = 70;
 class WorldEngine extends React.Component {
     constructor(props) {
         super(props);

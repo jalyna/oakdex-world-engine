@@ -75,8 +75,8 @@ export interface WorldEngineState {
     disabledMovement?: boolean;
 }
 export declare const TILE_SIZE = 16;
-export declare const FRAMES_PER_STEP = 3;
-export declare const FRAME_DURATION = 90;
+export declare const FRAMES_PER_STEP = 6;
+export declare const FRAME_DURATION = 70;
 export default class WorldEngine extends React.Component<WorldEngineProps, WorldEngineState> {
     constructor(props: WorldEngineProps);
     private canvas;

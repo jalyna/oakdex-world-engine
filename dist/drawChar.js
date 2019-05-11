@@ -3,7 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
 const calculateProgressOffset_1 = require("./calculateProgressOffset");
 const CHAR_SIZE = 32;
-function calculateCharsetOffset(dir, frame) {
+function calculateCharsetOffset(dir, frame, image) {
+    if (image.width === 160) {
+        return calculateCharsetOffsetDetailed(dir, frame);
+    }
     let top = CHAR_SIZE * 0;
     let left = CHAR_SIZE * 1;
     switch (dir) {
@@ -30,8 +33,29 @@ function calculateCharsetOffset(dir, frame) {
         left
     };
 }
+function calculateCharsetOffsetDetailed(dir, frame) {
+    let top = CHAR_SIZE * 0;
+    let left = CHAR_SIZE * 0;
+    switch (dir) {
+        case _1.Direction.Left:
+            top = CHAR_SIZE * 2;
+            break;
+        case _1.Direction.Right:
+            top = CHAR_SIZE * 3;
+            break;
+        case _1.Direction.Up:
+            top = CHAR_SIZE * 1;
+            break;
+    }
+    console.log(frame);
+    left = CHAR_SIZE * (frame % 5);
+    return {
+        top,
+        left
+    };
+}
 function drawChar(ctx, image, charState) {
-    const { top, left } = calculateCharsetOffset(charState.dir || _1.Direction.Down, charState.animationFrame);
+    const { top, left } = calculateCharsetOffset(charState.dir || _1.Direction.Down, charState.animationFrame, image);
     const offset = calculateProgressOffset_1.default(charState);
     const x = charState.x * _1.TILE_SIZE + offset.x;
     const y = charState.y * _1.TILE_SIZE + offset.y;
