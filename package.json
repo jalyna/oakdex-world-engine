@@ -26,29 +26,29 @@
   "license": "MIT",
   "dependencies": {
     "@types/pathfinding": "0.0.2",
-    "@types/react": "^16.7.20",
-    "@types/react-dom": "^16.0.11",
+    "@types/react": "^16.8.19",
+    "@types/react-dom": "^16.8.4",
     "pathfinding": "^0.4.18",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "devDependencies": {
-    "@types/enzyme": "^3.9.0",
+    "@types/enzyme": "^3.9.3",
     "@types/enzyme-adapter-react-16": "^1.0.3",
-    "@types/jest": "^24.0.6",
+    "@types/jest": "^24.0.13",
     "awesome-typescript-loader": "^5.2.1",
     "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.7.1",
+    "enzyme-adapter-react-16": "^1.13.2",
     "enzyme-to-json": "^3.3.5",
-    "jest": "^24.1.0",
-    "jest-canvas-mock": "^2.0.0-beta.1",
+    "jest": "^24.8.0",
+    "jest-canvas-mock": "^2.1.0",
     "redux-mock-store": "^1.5.3",
     "source-map-loader": "^0.2.4",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.2.4",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1",
     "url-loader": "^1.1.2",
-    "webpack": "^4.29.0",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.5.1"
   }
 }
