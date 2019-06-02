@@ -19,15 +19,16 @@ function isFieldWalkable(mapData, chars, charId, x, y) {
     const otherChars = chars.filter((c) => c.id !== charId);
     const fieldData = getFieldData(mapData, otherChars, x, y);
     const char = chars.find((c) => c.id === charId);
+    const currentFieldData = getFieldData(mapData, otherChars, char.x, char.y);
     switch (char.dir) {
         case _1.Direction.Left:
-            return fieldData.right === 0;
+            return fieldData.right === 0 && currentFieldData.left === 0;
         case _1.Direction.Right:
-            return fieldData.left === 0;
+            return fieldData.left === 0 && currentFieldData.right === 0;
         case _1.Direction.Down:
-            return fieldData.top === 0;
+            return fieldData.top === 0 && currentFieldData.bottom === 0;
         case _1.Direction.Up:
-            return fieldData.bottom === 0;
+            return fieldData.bottom === 0 && currentFieldData.top === 0;
     }
     return false;
 }
