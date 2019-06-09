@@ -58,6 +58,7 @@ export interface ActionHandler {
     disableMovement: () => void;
     enableMovement: () => void;
 }
+export declare type EvenType = 'talk' | 'walkOver' | 'mapEnter';
 export interface WorldEngineProps {
     mapData: MapData;
     viewport: Viewport;
@@ -67,6 +68,7 @@ export interface WorldEngineProps {
     onPressEnter?: (charId: string, triggeredChar: CharState) => void;
     onOver?: (charId: string, triggeredChar: CharState) => void;
     onLoaded?: (actionHandler: ActionHandler) => void;
+    onEvent?: (charId: string, eventType: EvenType, event: object) => void;
 }
 export interface WorldEngineState {
     chars: CharState[];

@@ -78,6 +78,8 @@ export interface ActionHandler {
   enableMovement: () => void
 }
 
+export type EvenType = 'talk' | 'walkOver' | 'mapEnter'
+
 export interface WorldEngineProps {
   mapData: MapData,
   viewport: Viewport,
@@ -86,7 +88,8 @@ export interface WorldEngineProps {
   onWalksTo?: (charId: string, change: CoordinateChange) => void,
   onPressEnter?: (charId: string, triggeredChar: CharState) => void,
   onOver?: (charId: string, triggeredChar: CharState) => void,
-  onLoaded?: (actionHandler: ActionHandler) => void
+  onLoaded?: (actionHandler: ActionHandler) => void,
+  onEvent?: (charId: string, eventType: EvenType, event: object) => void
 }
 
 export interface WorldEngineState {
@@ -168,6 +171,9 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       }
       if (this.props.onPressEnter) {
         this.props.onPressEnter(this.controllableChar.id, { ...nextChar })
+      }
+      if (this.props.onEvent && nextChar.event && nextChar.event.onTalk) {
+        this.props.onEvent(nextChar.id, 'talk', nextChar.event.onTalk)
       }
     }
   }
@@ -304,6 +310,11 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     if (this.props.onLoaded) {
       this.props.onLoaded(this.actionHandler)
     }
+    this.state.chars.forEach((char: CharState) => {
+      if (char.event && char.event.onMapEnter && !char.hidden && this.props.onEvent) {
+        this.props.onEvent(char.id, 'mapEnter', char.event.onMapEnter)
+      }
+    })
   }
 
   componentWillUnmount () {
@@ -370,10 +381,13 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   triggerOnWalksTo (charId: string, oldCoordinates: Coordinates) {
-    if (this.props.onOver) {
-      const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
-      if (overChar) {
+    const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y)
+    if (overChar) {
+      if (this.props.onOver) {
         this.props.onOver(charId, { ...overChar })
+      }
+      if (overChar && this.props.onEvent && overChar.event && overChar.event.onWalkOver) {
+        this.props.onEvent(overChar.id, 'walkOver', overChar.event.onWalkOver)
       }
     }
     if (!this.props.onWalksTo) {

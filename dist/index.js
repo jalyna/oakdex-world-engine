@@ -76,6 +76,9 @@ class WorldEngine extends React.Component {
             if (this.props.onPressEnter) {
                 this.props.onPressEnter(this.controllableChar.id, Object.assign({}, nextChar));
             }
+            if (this.props.onEvent && nextChar.event && nextChar.event.onTalk) {
+                this.props.onEvent(nextChar.id, 'talk', nextChar.event.onTalk);
+            }
         }
     }
     onMouseDown(dir) {
@@ -190,6 +193,11 @@ class WorldEngine extends React.Component {
         if (this.props.onLoaded) {
             this.props.onLoaded(this.actionHandler);
         }
+        this.state.chars.forEach((char) => {
+            if (char.event && char.event.onMapEnter && !char.hidden && this.props.onEvent) {
+                this.props.onEvent(char.id, 'mapEnter', char.event.onMapEnter);
+            }
+        });
     }
     componentWillUnmount() {
         clearInterval(this.interval);
@@ -241,10 +249,13 @@ class WorldEngine extends React.Component {
         this.interval = null;
     }
     triggerOnWalksTo(charId, oldCoordinates) {
-        if (this.props.onOver) {
-            const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
-            if (overChar) {
+        const overChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
+        if (overChar) {
+            if (this.props.onOver) {
                 this.props.onOver(charId, Object.assign({}, overChar));
+            }
+            if (overChar && this.props.onEvent && overChar.event && overChar.event.onWalkOver) {
+                this.props.onEvent(overChar.id, 'walkOver', overChar.event.onWalkOver);
             }
         }
         if (!this.props.onWalksTo) {

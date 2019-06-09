@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import WorldEngine, { Direction, ActionHandler, timeout } from '..'
+import WorldEngine, { Direction, ActionHandler, EvenType, timeout } from '..'
 
 import * as charset1 from './charset1.png'
 import * as charset2 from './charset2.png'
@@ -9,7 +9,7 @@ import * as charset3 from './charset3.png'
 import * as charset4 from './charset4.png'
 import * as charset6 from './charset6.png'
 
-const mapData = require('./small_demo.gamemap.json') // created through http://world-editor.oakdex.org
+const mapData = require('./demo_with_events.gamemap.json') // created through http://world-editor.oakdex.org
 
 console.log(mapData)
 
@@ -48,15 +48,9 @@ ReactDOM.render(
     mapData={mapData}
     viewport={{ width: 19, height: 15 }}
     controllableChar={{ id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }}
-    chars={[
-      { id: 'stranger-woman', name: 'Stranger', image: charset6, x: 9, y: 4, dir: Direction.Up }, // bottom is default
-      { id: 'guy', image: charset3, x: 10, y: 1, lookNotInDirection: true },
-      { id: 'umbrella-woman', image: charset4, x: 4, y: 1, dir: Direction.Left, walkThrough: true }
-    ]}
     onLoaded={(mapActionHandler) => { actionHandler = mapActionHandler }}
-    onPressEnter={(charId, triggeredChar) => triggeredChar.id === 'stranger-woman' ? onEnterStranger() : console.log('Pressing Enter For', triggeredChar.id)}
-    onOver={(charId, triggeredChar) => console.log('Walked over', triggeredChar.id)}
-    onWalksTo={(charId, { prev, next }) => console.log(charId, 'walked to', next.x, next.y, next.looksAt.x, next.looksAt.y, next.special)}
+    chars={[]}
+    onEvent={(charId: string, eventType: EvenType, event: object) => console.log(charId, eventType, event)}
     />,
   document.getElementById('app')
 )

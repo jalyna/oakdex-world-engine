@@ -7,7 +7,12 @@ export interface Char extends Coordinates {
   dir?: Direction,
   walkThrough?: boolean,
   lookNotInDirection?: boolean,
-  hidden?: boolean
+  hidden?: boolean,
+  event?: {
+    onTalk?: object,
+    onWalkOver?: object,
+    onMapEnter?: object
+  }
 }
 
 export interface CharState extends Char {
