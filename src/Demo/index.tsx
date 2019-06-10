@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
-import WorldEngine, { Direction, ActionHandler, EvenType, timeout } from '..'
+import WorldEngine, { Direction, ActionHandler, EventType, timeout } from '..'
 
 import * as charset1 from './charset1.png'
 import * as charset2 from './charset2.png'
@@ -50,7 +50,7 @@ ReactDOM.render(
     controllableChar={{ id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }}
     onLoaded={(mapActionHandler) => { actionHandler = mapActionHandler }}
     chars={[]}
-    onEvent={(charId: string, eventType: EvenType, event: object) => console.log(charId, eventType, event)}
+    onEvent={(charId: string, eventType: EventType, event: object) => console.log(charId, eventType, event)}
     />,
   document.getElementById('app')
 )

@@ -78,7 +78,7 @@ export interface ActionHandler {
   enableMovement: () => void
 }
 
-export type EvenType = 'talk' | 'walkOver' | 'mapEnter'
+export type EventType = 'talk' | 'walkOver' | 'mapEnter'
 
 export interface WorldEngineProps {
   mapData: MapData,
@@ -89,7 +89,7 @@ export interface WorldEngineProps {
   onPressEnter?: (charId: string, triggeredChar: CharState) => void,
   onOver?: (charId: string, triggeredChar: CharState) => void,
   onLoaded?: (actionHandler: ActionHandler) => void,
-  onEvent?: (charId: string, eventType: EvenType, event: object) => void
+  onEvent?: (charId: string, eventType: EventType, event: object) => void
 }
 
 export interface WorldEngineState {

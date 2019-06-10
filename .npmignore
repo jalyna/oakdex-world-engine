@@ -6,6 +6,7 @@ tsconfig.json
 docs
 dist/Demo
 dist/demo.js
+dist/demo.js.map
 dist/demo.d.ts
 dist/index.html
 dist/favicons
