@@ -32,6 +32,11 @@ export interface MapData {
     url?: string
   }[],
   chars?: Char[],
+  versions?: {
+    name: string,
+    mapBackgroundImage: string,
+    mapForegroundImage: string
+  }[],
   gifLayer?: {
     tilesets: {
       [titlesetTitle: string]: {
@@ -100,6 +105,7 @@ export type EventType = 'talk' | 'walkOver' | 'mapEnter'
 
 export interface WorldEngineProps {
   mapData: MapData,
+  mapVersion?: string,
   viewport: Viewport,
   controllableChar: Char,
   chars: Char[],
@@ -162,7 +168,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
             imageRendering: 'pixelated',
             width: this.props.mapData.width * TILE_SIZE,
             height: this.props.mapData.height * TILE_SIZE,
-            backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
+            backgroundImage: 'url(' + this.mapBackgroundImage + ')'
           }}>
             <div style={{
               imageRendering: 'pixelated',
@@ -180,6 +186,34 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         <TouchPad onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp} />
       </div>
     )
+  }
+
+  get mapBackgroundImage(): string {
+    if (!this.props.mapVersion || this.props.mapVersion === 'default' || !this.props.mapData.versions) {
+      return this.props.mapData.mapBackgroundImage
+    }
+
+    const version = this.props.mapData.versions.find(version => version.name === this.props.mapVersion)
+
+    if (!version) {
+      return this.props.mapData.mapBackgroundImage
+    }
+
+    return version.mapBackgroundImage
+  }
+
+  get mapForegroundImage(): string {
+    if (!this.props.mapVersion || this.props.mapVersion === 'default' || !this.props.mapData.versions) {
+      return this.props.mapData.mapForegroundImage
+    }
+
+    const version = this.props.mapData.versions.find(version => version.name === this.props.mapVersion)
+
+    if (!version) {
+      return this.props.mapData.mapForegroundImage
+    }
+
+    return version.mapForegroundImage
   }
 
   renderGifLayer () {
@@ -527,7 +561,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     draw(
       this.canvas.current,
       this.props.mapData,
-      this.state.chars
+      this.state.chars,
+      this.mapForegroundImage
     )
   }
 }

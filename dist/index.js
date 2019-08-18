@@ -57,7 +57,7 @@ class WorldEngine extends React.Component {
                         imageRendering: 'pixelated',
                         width: this.props.mapData.width * exports.TILE_SIZE,
                         height: this.props.mapData.height * exports.TILE_SIZE,
-                        backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
+                        backgroundImage: 'url(' + this.mapBackgroundImage + ')'
                     } },
                     React.createElement("div", { style: {
                             imageRendering: 'pixelated',
@@ -67,6 +67,26 @@ class WorldEngine extends React.Component {
                         } }, this.renderGifLayer()),
                     React.createElement("canvas", { ref: this.canvas, width: this.props.mapData.width * exports.TILE_SIZE, height: this.props.mapData.height * exports.TILE_SIZE, style: { imageRendering: 'pixelated', position: 'absolute' } }))),
             React.createElement(TouchPad_1.default, { onMouseDown: this.onMouseDown, onMouseUp: this.onMouseUp })));
+    }
+    get mapBackgroundImage() {
+        if (!this.props.mapVersion || this.props.mapVersion === 'default' || !this.props.mapData.versions) {
+            return this.props.mapData.mapBackgroundImage;
+        }
+        const version = this.props.mapData.versions.find(version => version.name === this.props.mapVersion);
+        if (!version) {
+            return this.props.mapData.mapBackgroundImage;
+        }
+        return version.mapBackgroundImage;
+    }
+    get mapForegroundImage() {
+        if (!this.props.mapVersion || this.props.mapVersion === 'default' || !this.props.mapData.versions) {
+            return this.props.mapData.mapForegroundImage;
+        }
+        const version = this.props.mapData.versions.find(version => version.name === this.props.mapVersion);
+        if (!version) {
+            return this.props.mapData.mapForegroundImage;
+        }
+        return version.mapForegroundImage;
     }
     renderGifLayer() {
         if (!this.props.mapData.gifLayer) {
@@ -364,7 +384,7 @@ class WorldEngine extends React.Component {
         if (!this.canvas.current) {
             return;
         }
-        draw_1.default(this.canvas.current, this.props.mapData, this.state.chars);
+        draw_1.default(this.canvas.current, this.props.mapData, this.state.chars, this.mapForegroundImage);
     }
 }
 exports.default = WorldEngine;

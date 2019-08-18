@@ -34,5 +34,5 @@ async function onEnterStranger() {
     actionHandler.enableMovement();
     console.log('DONE');
 }
-ReactDOM.render(React.createElement(__1.default, { mapData: mapData, viewport: { width: 19, height: 15 }, controllableChar: { id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }, onLoaded: (mapActionHandler) => { actionHandler = mapActionHandler; }, chars: [], onEvent: (charId, eventType, event) => console.log(charId, eventType, event) }), document.getElementById('app'));
+ReactDOM.render(React.createElement(__1.default, { mapData: mapData, mapVersion: 'night', viewport: { width: 19, height: 15 }, controllableChar: { id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }, onLoaded: (mapActionHandler) => { actionHandler = mapActionHandler; }, chars: [], onEvent: (charId, eventType, event) => console.log(charId, eventType, event) }), document.getElementById('app'));
 //# sourceMappingURL=index.js.map

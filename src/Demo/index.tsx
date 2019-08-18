@@ -46,6 +46,7 @@ async function onEnterStranger () {
 ReactDOM.render(
   <WorldEngine
     mapData={mapData}
+    mapVersion='night'
     viewport={{ width: 19, height: 15 }}
     controllableChar={{ id: 'heroine', name: 'Heroine', image: charset6, x: 7, y: 3 }}
     onLoaded={(mapActionHandler) => { actionHandler = mapActionHandler }}

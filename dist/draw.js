@@ -15,18 +15,18 @@ function loadImage(key, src) {
         img.onload = () => resolve();
     });
 }
-function loadImages(mapData, chars) {
+function loadImages(mapData, mapForegroundImage, chars) {
     if (currentMap !== mapData.title) {
         loadedImages = {};
         currentMap = mapData.title;
     }
     return Promise.all([
-        loadImage('foreground', mapData.mapForegroundImage)
+        loadImage('foreground', mapForegroundImage)
     ].concat(chars.map((c) => loadImage('char-' + c.id, c.image))));
 }
-function default_1(canvas, mapData, charStates) {
+function default_1(canvas, mapData, charStates, mapForegroundImage) {
     const ctx = canvas.getContext('2d');
-    loadImages(mapData, charStates).then(() => {
+    loadImages(mapData, mapForegroundImage, charStates).then(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const sortedCharStates = charStates.slice().sort((a, b) => {
             if (a.walkThrough === b.walkThrough) {

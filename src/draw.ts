@@ -21,21 +21,21 @@ function loadImage (key: string, src: string) {
   })
 }
 
-function loadImages (mapData: MapData, chars: CharState[]) {
+function loadImages (mapData: MapData, mapForegroundImage: string, chars: CharState[]) {
   if (currentMap !== mapData.title) {
     loadedImages = {}
     currentMap = mapData.title
   }
 
   return Promise.all([
-    loadImage('foreground', mapData.mapForegroundImage)
+    loadImage('foreground', mapForegroundImage)
   ].concat(chars.map((c) => loadImage('char-' + c.id, c.image))))
 }
 
-export default function (canvas: HTMLCanvasElement, mapData: MapData, charStates: CharState[]) {
+export default function (canvas: HTMLCanvasElement, mapData: MapData, charStates: CharState[], mapForegroundImage: string) {
   const ctx = canvas.getContext('2d')
 
-  loadImages(mapData, charStates).then(() => {
+  loadImages(mapData, mapForegroundImage, charStates).then(() => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     const sortedCharStates = charStates.slice().sort((a, b) => {
       if (a.walkThrough === b.walkThrough) {

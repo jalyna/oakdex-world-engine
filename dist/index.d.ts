@@ -21,6 +21,11 @@ export interface MapData {
         url?: string;
     }[];
     chars?: Char[];
+    versions?: {
+        name: string;
+        mapBackgroundImage: string;
+        mapForegroundImage: string;
+    }[];
     gifLayer?: {
         tilesets: {
             [titlesetTitle: string]: {
@@ -79,6 +84,7 @@ export interface ActionHandler {
 export declare type EventType = 'talk' | 'walkOver' | 'mapEnter';
 export interface WorldEngineProps {
     mapData: MapData;
+    mapVersion?: string;
     viewport: Viewport;
     controllableChar: Char;
     chars: Char[];
@@ -103,6 +109,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     private interval;
     private actionHandler;
     render(): JSX.Element;
+    readonly mapBackgroundImage: string;
+    readonly mapForegroundImage: string;
     renderGifLayer(): JSX.Element[];
     addCssClasses(): void;
     pressEnter(): void;
