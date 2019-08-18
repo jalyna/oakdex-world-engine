@@ -97,7 +97,11 @@ class WorldEngine extends React.Component {
             if (!tileset) {
                 return;
             }
-            return (React.createElement("div", { key: field.x + '_' + field.y, className: `oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`, style: {
+            let className = `oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`;
+            if (this.props.mapVersion && this.props.mapVersion !== 'default') {
+                className += '--' + this.props.mapVersion.replace(/\s+/g, '');
+            }
+            return (React.createElement("div", { key: field.x + '_' + field.y, className: className, style: {
                     position: 'absolute',
                     width: exports.TILE_SIZE,
                     height: exports.TILE_SIZE,
@@ -117,6 +121,13 @@ class WorldEngine extends React.Component {
           .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')} {
             background-image: url(${this.props.mapData.gifLayer.tilesets[tilesetId].imageBase64});
           }
+          ${this.props.mapData.gifLayer.tilesets[tilesetId].versions.map(v => {
+                return `
+              .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')}--${v.name.replace(/\s+/g, '')} {
+                background-image: url(${v.imageBase64});
+              }
+            `;
+            })}
         `;
         })}
     </style>`;

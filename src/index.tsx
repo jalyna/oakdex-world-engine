@@ -226,7 +226,11 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
       if (!tileset) {
         return
       }
-      return (<div key={field.x + '_' + field.y} className={`oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`} style={{
+      let className = `oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`
+      if (this.props.mapVersion && this.props.mapVersion !== 'default') {
+        className += '--' + this.props.mapVersion.replace(/\s+/g, '')
+      }
+      return (<div key={field.x + '_' + field.y} className={className} style={{
         position: 'absolute',
         width: TILE_SIZE,
         height: TILE_SIZE,
@@ -248,6 +252,13 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
           .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')} {
             background-image: url(${this.props.mapData.gifLayer.tilesets[tilesetId].imageBase64});
           }
+          ${this.props.mapData.gifLayer.tilesets[tilesetId].versions.map(v => {
+            return `
+              .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')}--${v.name.replace(/\s+/g, '')} {
+                background-image: url(${v.imageBase64});
+              }
+            `
+          })}
         `
       })}
     </style>`
