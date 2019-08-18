@@ -59,8 +59,47 @@ class WorldEngine extends React.Component {
                         height: this.props.mapData.height * exports.TILE_SIZE,
                         backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
                     } },
+                    React.createElement("div", { style: {
+                            imageRendering: 'pixelated',
+                            position: 'absolute',
+                            width: this.props.mapData.width * exports.TILE_SIZE,
+                            height: this.props.mapData.height * exports.TILE_SIZE
+                        } }, this.renderGifLayer()),
                     React.createElement("canvas", { ref: this.canvas, width: this.props.mapData.width * exports.TILE_SIZE, height: this.props.mapData.height * exports.TILE_SIZE, style: { imageRendering: 'pixelated', position: 'absolute' } }))),
             React.createElement(TouchPad_1.default, { onMouseDown: this.onMouseDown, onMouseUp: this.onMouseUp })));
+    }
+    renderGifLayer() {
+        if (!this.props.mapData.gifLayer) {
+            return;
+        }
+        return this.props.mapData.gifLayer.fields.map(field => {
+            const tileset = this.props.mapData.gifLayer.tilesets[field.tilesetTitle];
+            if (!tileset) {
+                return;
+            }
+            return (React.createElement("div", { key: field.x + '_' + field.y, className: `oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`, style: {
+                    position: 'absolute',
+                    width: exports.TILE_SIZE,
+                    height: exports.TILE_SIZE,
+                    top: (field.y * exports.TILE_SIZE),
+                    left: (field.x * exports.TILE_SIZE),
+                    backgroundPosition: '-' + (field.tilesetX * exports.TILE_SIZE) + 'px -' + (field.tilesetY * exports.TILE_SIZE) + 'px'
+                } }));
+        });
+    }
+    addCssClasses() {
+        if (!this.props.mapData.gifLayer) {
+            return;
+        }
+        document.head.innerHTML += `<style>
+      ${Object.keys(this.props.mapData.gifLayer.tilesets).map(tilesetId => {
+            return `
+          .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')} {
+            background-image: url(${this.props.mapData.gifLayer.tilesets[tilesetId].imageBase64});
+          }
+        `;
+        })}
+    </style>`;
     }
     pressEnter() {
         const hoverChar = this.state.chars.find((c) => c.id !== this.controllableChar.id && c.x === this.controllableChar.x && c.y === this.controllableChar.y);
@@ -177,6 +216,7 @@ class WorldEngine extends React.Component {
         });
     }
     componentDidMount() {
+        this.addCssClasses();
         this.redraw();
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);

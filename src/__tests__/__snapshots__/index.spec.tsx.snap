@@ -31,6 +31,16 @@ exports[`<WorldEngine> renders correctly 1`] = `
         }
       }
     >
+      <div
+        style={
+          Object {
+            "height": 688,
+            "imageRendering": "pixelated",
+            "position": "absolute",
+            "width": 992,
+          }
+        }
+      />
       <canvas
         height={688}
         style={

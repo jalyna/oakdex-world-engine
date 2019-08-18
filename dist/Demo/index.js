@@ -4,7 +4,7 @@ const React = require("react");
 const ReactDOM = require("react-dom");
 const __1 = require("..");
 const charset6 = require("./charset6.png");
-const mapData = require('./demo_with_events.gamemap.json'); // created through http://world-editor.oakdex.org
+const mapData = require('./animated.gamemap.json'); // created through http://world-editor.oakdex.org
 console.log(mapData);
 let actionHandler;
 async function onEnterStranger() {

@@ -31,7 +31,25 @@ export interface MapData {
     title: string,
     url?: string
   }[],
-  chars?: Char[]
+  chars?: Char[],
+  gifLayer?: {
+    tilesets: {
+      [titlesetTitle: string]: {
+        imageBase64: string,
+        versions?: {
+          name: string,
+          imageBase64: string
+        }[]
+      }
+    },
+    fields: {
+      x: number,
+      y: number,
+      tilesetTitle: string,
+      tilesetX: number,
+      tilesetY: number
+    }[]
+  }
 }
 
 export interface Coordinates {
@@ -146,6 +164,12 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
             height: this.props.mapData.height * TILE_SIZE,
             backgroundImage: 'url(' + this.props.mapData.mapBackgroundImage + ')'
           }}>
+            <div style={{
+              imageRendering: 'pixelated',
+              position: 'absolute',
+              width: this.props.mapData.width * TILE_SIZE,
+              height: this.props.mapData.height * TILE_SIZE
+            }}>{this.renderGifLayer()}</div>
             <canvas
               ref={this.canvas}
               width={this.props.mapData.width * TILE_SIZE}
@@ -156,6 +180,43 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
         <TouchPad onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp} />
       </div>
     )
+  }
+
+  renderGifLayer () {
+    if (!this.props.mapData.gifLayer) {
+      return
+    }
+
+    return this.props.mapData.gifLayer.fields.map(field => {
+      const tileset = this.props.mapData.gifLayer.tilesets[field.tilesetTitle]
+      if (!tileset) {
+        return
+      }
+      return (<div key={field.x + '_' + field.y} className={`oakdex-world-engine--tileset--${field.tilesetTitle.replace(/\s+/g, '')}`} style={{
+        position: 'absolute',
+        width: TILE_SIZE,
+        height: TILE_SIZE,
+        top: (field.y * TILE_SIZE),
+        left: (field.x * TILE_SIZE),
+        backgroundPosition: '-' + (field.tilesetX * TILE_SIZE) + 'px -' + (field.tilesetY * TILE_SIZE) + 'px'
+      }}></div>)
+    })
+  }
+
+  addCssClasses() {
+    if (!this.props.mapData.gifLayer) {
+      return
+    }
+
+    document.head.innerHTML += `<style>
+      ${Object.keys(this.props.mapData.gifLayer.tilesets).map(tilesetId => {
+        return `
+          .oakdex-world-engine--tileset--${tilesetId.replace(/\s+/g, '')} {
+            background-image: url(${this.props.mapData.gifLayer.tilesets[tilesetId].imageBase64});
+          }
+        `
+      })}
+    </style>`
   }
 
   pressEnter () {
@@ -294,6 +355,7 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
   }
 
   componentDidMount () {
+    this.addCssClasses()
     this.redraw()
     document.addEventListener('keydown', this.onKeyDown)
     document.addEventListener('keyup', this.onKeyUp)

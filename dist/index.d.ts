@@ -21,6 +21,24 @@ export interface MapData {
         url?: string;
     }[];
     chars?: Char[];
+    gifLayer?: {
+        tilesets: {
+            [titlesetTitle: string]: {
+                imageBase64: string;
+                versions?: {
+                    name: string;
+                    imageBase64: string;
+                }[];
+            };
+        };
+        fields: {
+            x: number;
+            y: number;
+            tilesetTitle: string;
+            tilesetX: number;
+            tilesetY: number;
+        }[];
+    };
 }
 export interface Coordinates {
     x: number;
@@ -85,6 +103,8 @@ export default class WorldEngine extends React.Component<WorldEngineProps, World
     private interval;
     private actionHandler;
     render(): JSX.Element;
+    renderGifLayer(): JSX.Element[];
+    addCssClasses(): void;
     pressEnter(): void;
     onMouseDown(dir: Direction | string): void;
     onMouseUp(dir: Direction | string): void;

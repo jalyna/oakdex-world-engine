@@ -9,7 +9,7 @@ import * as charset3 from './charset3.png'
 import * as charset4 from './charset4.png'
 import * as charset6 from './charset6.png'
 
-const mapData = require('./demo_with_events.gamemap.json') // created through http://world-editor.oakdex.org
+const mapData = require('./animated.gamemap.json') // created through http://world-editor.oakdex.org
 
 console.log(mapData)
 
