@@ -29,7 +29,7 @@
     "@types/react": "^16.8.19",
     "@types/react-dom": "^16.8.4",
     "pathfinding": "^0.4.18",
-    "react": "^16.8.6",
+    "react": "^17.0.1",
     "react-dom": "^16.8.6"
   },
   "devDependencies": {
